@@ -330,7 +330,60 @@ function oceny_wszystkie(){
 	document.querySelector('#oceny').innerHTML = data.ocenyRendered
 }
 
+function zadania(){
+	loadPage('zadania')
+	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
+	client.praceDomowe(new Date()).then(zadania => {
+		data.zadania = zadania
+		zadania.ListK.forEach(zadanie => {
+			if(new Date(zadanie.dataO) > new Date()){
+				temp += '<tr>'
+				temp += '<td>' + zadanie.przed + '</td>'
+				temp += '<td>' + zadanie.dataZ + '</td>'
+				temp += '<td>' + zadanie.dataO + '</td>'
+				temp += `<td><a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a></td>`
+				temp += '</tr>'
+			}
+		})
+		if(temp === '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'){
+			temp += '<tr><td colspan="4" style="text-align: center">Brak zadań domowych</td></tr>'
+		}
+		data.zadaniaRendered = temp
+		document.querySelector('#zadania').innerHTML = temp
+	})
+}
 
+function zadania_wszystkie(){
+	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
+	data.zadania.ListK.forEach(zadanie => {
+		temp += '<tr>'
+		temp += '<td>' + zadanie.przed + '</td>'
+		temp += '<td>' + zadanie.dataZ + '</td>'
+		temp += '<td>' + zadanie.dataO + '</td>'
+		temp += `<td><a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a></td>`
+		temp += '</tr>'
+	})
+	document.querySelector('#zadania').innerHTML = temp
+}
+
+function zadania_nadchodzace(){
+	document.querySelector('#zadania').innerHTML = data.zadaniaRendered
+}
+
+function zadanie(recordID){
+	client.pracaDomowa(recordID).then(zadanie => {
+		zadanie = zadanie.praca
+		var tmp = []
+		tmp.push(`<h4>${zadanie.tytul}</h4>`)
+		tmp.push(`Przedmiot: ${zadanie.przedNazwa}`)
+		tmp.push(`Data zadania: ${zadanie.dataZ}`)
+		tmp.push(`Data oddania: ${zadanie.dataO}`)
+		tmp.push(`Treść: ${zadanie.tresc.replace('\n', '<br />')}`)
+		document.querySelector('#zadanie').innerHTML = tmp.join('<br />')
+		$('#zadanie-modal').modal()
+		$('#zadanie-modal').modal('open')
+	})
+}
 
 function markToInt(ocena){
 	if(ocena >= 95) return 6

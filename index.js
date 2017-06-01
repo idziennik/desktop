@@ -15,7 +15,7 @@ function createWindow () {
 
 	mainWindow.setMenu(null)
 
-	// mainWindow.toggleDevTools()
+	mainWindow.toggleDevTools()
 
 	mainWindow.on('closed', () => {
 		mainWindow = null
