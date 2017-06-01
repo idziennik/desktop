@@ -1,0 +1,51 @@
+{
+  "name": "idziennik-cross",
+  "version": "1.0.0",
+  "description": "Wieloplatformowa aplikacja desktopowa dla modułu iDziennik",
+  "main": "index.js",
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bjornskjald/idziennik-cross.git"
+  },
+  "author": "Bjornskjald",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bjornskjald/idziennik-cross/issues"
+  },
+  "build": {
+    "appId": "ml.bjorn.idziennik.electron",
+    "files": [
+      "css/",
+      "js/",
+      "html/",
+      "fonts/",
+      "node_modules/",
+      "main.html",
+      "package.json",
+      "index.js"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "desktop": {
+      "Name": "iDziennik",
+      "Type": "Application",
+      "Category": "Utilities"
+    }
+  },
+  "homepage": "https://github.com/Bjornskjald/idziennik-cross#readme",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "idziennik": "^4.2.0",
+    "jquery": "^3.2.1",
+    "materialize-css": "^0.98.2"
+  },
+  "devDependencies": {
+    "electron": "^1.6.10"
+  }
+}
