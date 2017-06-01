@@ -24,15 +24,14 @@ $(() => {
 				alert(err)
 			}
 			console.error(err)
-			login()
+			loadPage('login')
 		})
 	} else {
-		login()
+		loadPage('login')
 	}
 });
 
 function login(){
-	loadPage('login')
 	document.querySelector('#loginbtn').addEventListener('click', () => {
 		if(document.querySelector('#username').value === '' || document.querySelector('#password').value === ''){
 			document.querySelector('#status').innerHTML = 'Nie wpisano danych!'
