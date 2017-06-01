@@ -1,7 +1,7 @@
 {
 	"name": "idziennik-electron",
 	"productName": "iDziennik",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
 	"main": "index.js",
 	"scripts": {
@@ -32,7 +32,8 @@
 			"category": "Utility;Network",
 			"target": [
 				"AppImage"
-			]
+			],
+			"icon": "icons/"
 		}
 	},
 	"homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
