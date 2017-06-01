@@ -281,38 +281,26 @@ function oceny(){
 	}).catch(err => handleError(err, 'oceny'))
 }
 
-function oceny_ostatniMiesiac(){
+function oceny_filter(filter){
 	var temp = ''
+	var query = filter === 'szukaj' ? document.querySelector('#szukaj').value : undefined
 	data.oceny.Przedmioty.forEach(przedmiot => {
 		var tmp = []
 		przedmiot.Oceny.forEach(ocena => {
 			var desc = `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
 			if(ocena.Typ === 0){
-				if(Math.abs(new Date() - new Date(ocena.Data_wystaw.replace(/-/g, '/'))) < 2678400000){
-					tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
-				}
-			}
-		})
-		temp += '<tr>'
-		temp += '<td>' + przedmiot.Przedmiot + '</td>'
-		temp += '<td>' + tmp.join(' ') + '</td>'
-		temp += '<td>' + przedmiot.SrednieCaloroczne + '</td>'
-		temp += '<td>' + markToInt(parseInt(przedmiot.SrednieCaloroczne, 10)) + '</td>'
-		temp += '</tr>'
-	})
-	document.querySelector('#oceny').innerHTML = temp
-}
+				switch(filter){
+					case 'ostatniMiesiac': 
+						if(Math.abs(new Date() - new Date(ocena.Data_wystaw.replace(/-/g, '/'))) < 2678400000){
+							tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
+						}
+						break
+					case 'szukaj':
+						if(ocena.Kategoria.toLowerCase().includes(query.toLowerCase()) || ocena.Ocena.toLowerCase().includes(query.toLowerCase())){
+							tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
+						}
+						break
 
-function oceny_szukaj(){
-	var query = document.querySelector('#szukaj').value
-	var temp = ''
-	data.oceny.Przedmioty.forEach(przedmiot => {
-		var tmp = []
-		przedmiot.Oceny.forEach(ocena => {
-			var desc = `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
-			if(ocena.Typ === 0){
-				if(ocena.Kategoria.toLowerCase().includes(query.toLowerCase()) || ocena.Ocena.toLowerCase().includes(query.toLowerCase())){
-					tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
 				}
 			}
 		})
