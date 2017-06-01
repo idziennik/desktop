@@ -1,51 +1,48 @@
 {
-  "name": "idziennik-electron",
-  "version": "1.0.0",
-  "description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
-  "main": "index.js",
-  "scripts": {
-    "test": "true"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Bjornskjald/idziennik-electron.git"
-  },
-  "author": "Bjornskjald",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Bjornskjald/idziennik-electron/issues"
-  },
-  "build": {
-    "appId": "ml.bjorn.idziennik.electron",
-    "files": [
-      "css/",
-      "js/",
-      "html/",
-      "fonts/",
-      "node_modules/",
-      "main.html",
-      "package.json",
-      "index.js"
-    ],
-    "linux": {
-      "target": [
-        "AppImage"
-      ]
-    },
-    "desktop": {
-      "Name": "iDziennik",
-      "Type": "Application",
-      "Category": "Utilities"
-    }
-  },
-  "homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
-  "dependencies": {
-    "crypto-js": "^3.1.9-1",
-    "idziennik": "^4.2.0",
-    "jquery": "^3.2.1",
-    "materialize-css": "^0.98.2"
-  },
-  "devDependencies": {
-    "electron": "^1.6.10"
-  }
+	"name": "idziennik-electron",
+	"productName": "iDziennik",
+	"version": "1.0.1",
+	"description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
+	"main": "index.js",
+	"scripts": {
+		"test": "true"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Bjornskjald/idziennik-electron.git"
+	},
+	"author": "Bjornskjald",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Bjornskjald/idziennik-electron/issues"
+	},
+	"build": {
+		"appId": "ml.bjorn.idziennik.electron",
+		"files": [
+			"css/",
+			"js/",
+			"html/",
+			"fonts/",
+			"node_modules/",
+			"main.html",
+			"package.json",
+			"index.js"
+		],
+		"linux": {
+			"category": "Utilities",
+			"target": [
+				"AppImage"
+			]
+		}
+	},
+	"homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
+	"dependencies": {
+		"crypto-js": "^3.1.9-1",
+		"idziennik": "^4.2.0",
+		"jquery": "^3.2.1",
+		"materialize-css": "^0.98.2"
+	},
+	"devDependencies": {
+		"electron": "^1.6.10"
+	}
 }
