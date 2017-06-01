@@ -1,7 +1,7 @@
 {
 	"name": "idziennik-electron",
 	"productName": "iDziennik",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
 	"main": "index.js",
 	"scripts": {
@@ -29,7 +29,7 @@
 			"index.js"
 		],
 		"linux": {
-			"category": "Utilities",
+			"category": "Utility;Network",
 			"target": [
 				"AppImage"
 			]
