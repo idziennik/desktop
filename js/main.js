@@ -32,32 +32,30 @@ $(() => {
 });
 
 function login(){
-	document.querySelector('#loginbtn').addEventListener('click', () => {
-		if(document.querySelector('#username').value === '' || document.querySelector('#password').value === ''){
-			document.querySelector('#status').innerHTML = 'Nie wpisano danych!'
-			return false
-		}
-		document.querySelector('#loginbtn').parentNode.classList.add('disabled')
-		document.querySelector('#status').innerHTML = 'Loguję...'
-		idziennik({username: document.querySelector('#username').value, password: document.querySelector('#password').value})
-		.then(cl => {
-			data.username = cl.name
-			data.hash = cryptojs.MD5(cl.name.toLowerCase() + document.querySelector('#password').value).toString(cryptojs.enc.Hex)
-			fs.writeFileSync(require('os').homedir() + '/.idziennik', JSON.stringify(data), 'utf8')
-			client = cl
-			pulpit()
-		})
-		.catch(err => {
-			if(document.querySelector('#status')){
-				if(err.toString() === 'Error: Incorrect password.'){
-					document.querySelector('#status').innerHTML = 'Nieprawidłowe hasło.'
-				} else {
-					document.querySelector('#status').innerHTML = err
-				}
-				document.querySelector('#loginbtn').parentNode.classList.remove('disabled')
+	if(document.querySelector('#username').value === '' || document.querySelector('#password').value === ''){
+		document.querySelector('#status').innerHTML = 'Nie wpisano danych!'
+		return false
+	}
+	document.querySelector('#loginbtn').parentNode.classList.add('disabled')
+	document.querySelector('#status').innerHTML = 'Loguję...'
+	idziennik({username: document.querySelector('#username').value, password: document.querySelector('#password').value})
+	.then(cl => {
+		data.username = cl.name
+		data.hash = cryptojs.MD5(cl.name.toLowerCase() + document.querySelector('#password').value).toString(cryptojs.enc.Hex)
+		fs.writeFileSync(require('os').homedir() + '/.idziennik', JSON.stringify(data), 'utf8')
+		client = cl
+		pulpit()
+	})
+	.catch(err => {
+		if(document.querySelector('#status')){
+			if(err.toString() === 'Error: Incorrect password.'){
+				document.querySelector('#status').innerHTML = 'Nieprawidłowe hasło.'
+			} else {
+				document.querySelector('#status').innerHTML = err
 			}
-			console.error(err)
-		})
+			document.querySelector('#loginbtn').parentNode.classList.remove('disabled')
+		}
+		console.error(err)
 	})
 }
 
