@@ -12,6 +12,7 @@ $(() => {
 	}
 	container = document.querySelector('main')
 	if(typeof data.username === 'string' && typeof data.hash === 'string'){
+		// TODO: dodać preloader
 		idziennik({username: data.username, hash: data.hash})
 		.then(cl => {
 			client = cl
@@ -38,6 +39,7 @@ function login(){
 	}
 	document.querySelector('#loginbtn').parentNode.classList.add('disabled')
 	document.querySelector('#status').innerHTML = 'Loguję...'
+	// TODO: dodać preloader
 	idziennik({username: document.querySelector('#username').value, password: document.querySelector('#password').value})
 	.then(cl => {
 		data.username = cl.name
@@ -380,17 +382,18 @@ function markToInt(ocena){
 }
 
 function handleError(err, page){
-	alert(err.stack)
 	if(err.toString().includes('Unauthorized')){
+		alert('Sesja wygasła. Loguję...')
+		// TODO: dodać preloader
 		console.log('Niezalogowany.')
 		idziennik({username: data.username, hash: data.hash})
 		.then(cl => {
 			client = cl
+			window[page]()
 		})
 		return
-		window[page]()
 	}
-	alert('Wystąpił błąd: '+err)
+	alert('Wystąpił błąd: ' + err)
 }
 
 function loadPage(page){
