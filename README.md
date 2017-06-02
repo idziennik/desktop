@@ -18,5 +18,5 @@ Możesz też pobrać gotowy plik z zakładki "Releases".
 #### TODO:
 
 - Dodać resztę funkcji z wersji webowej
-- Dodać ikonę aplikacji
+- ~~Dodać ikonę aplikacji~~
 - Dodać obsługę wielu kont naraz
