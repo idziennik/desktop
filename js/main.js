@@ -250,11 +250,11 @@ function plan(date){
 
 function oceny(){
 	loadPage('oceny')
-	client.oceny().then(result => {
-		data.oceny = result
+	client.oceny().then(oceny => {
+		data.oceny = oceny
 		var srednia = 0, sredniaCounter = 0
 		var temp = ''
-		result.Przedmioty.forEach(przedmiot => {
+		oceny.Przedmioty.forEach(przedmiot => {
 			var tmp = []
 			przedmiot.Oceny.forEach(ocena => {
 				var desc = `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
@@ -263,19 +263,21 @@ function oceny(){
 				}
 			})
 
-			temp += '<tr>'
-			temp += '<td>' + przedmiot.Przedmiot + '</td>'
-			temp += '<td>' + tmp.join(' ') + '</td>'
-			temp += '<td>' + przedmiot.SrednieCaloroczne + '</td>'
-			temp += '<td>' + markToInt(parseInt(przedmiot.SrednieCaloroczne, 10)) + '</td>'
-			temp += '</tr>'
+			temp += `
+				<tr>
+					<td>${przedmiot.Przedmiot}</td>
+					<td>${tmp.join(' ')}</td>
+					<td>${przedmiot.SrednieCaloroczne}</td>
+					<td>${markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))}</td>
+				</tr>
+			`
 
 			srednia += markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))
 			sredniaCounter++
 		})
 		srednia = Math.round(srednia / sredniaCounter * 100) / 100
-		document.querySelector('#oceny').innerHTML = temp
 		data.ocenyRendered = temp
+		document.querySelector('#oceny').innerHTML = temp
 		document.querySelector('#srednia').innerHTML += srednia
 	}).catch(err => handleError(err, 'oceny'))
 }
@@ -303,12 +305,14 @@ function oceny_filter(filter){
 				}
 			}
 		})
-		temp += '<tr>'
-		temp += '<td>' + przedmiot.Przedmiot + '</td>'
-		temp += '<td>' + tmp.join(' ') + '</td>'
-		temp += '<td>' + przedmiot.SrednieCaloroczne + '</td>'
-		temp += '<td>' + markToInt(parseInt(przedmiot.SrednieCaloroczne, 10)) + '</td>'
-		temp += '</tr>'
+		temp += `
+			<tr>
+				<td>${przedmiot.Przedmiot}</td>
+				<td>${tmp.join(' ')}</td>
+				<td>${przedmiot.SrednieCaloroczne}</td>
+				<td>${markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))}</td>
+			</tr>
+		`
 	})
 	document.querySelector('#oceny').innerHTML = temp
 }
@@ -319,20 +323,31 @@ function oceny_wszystkie(){
 
 function zadania(){
 	loadPage('zadania')
-	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
+	var temp = `
+	<tr>
+		<th>Przedmiot</th>
+		<th>Data zadania</th>
+		<th>Data oddania</th>
+		<th>Tytuł</th>
+	</tr>
+	`
 	client.praceDomowe(new Date()).then(zadania => {
 		data.zadania = zadania
 		zadania.ListK.forEach(zadanie => {
 			if(new Date(zadanie.dataO) > new Date()){
-				temp += '<tr>'
-				temp += '<td>' + zadanie.przed + '</td>'
-				temp += '<td>' + zadanie.dataZ + '</td>'
-				temp += '<td>' + zadanie.dataO + '</td>'
-				temp += `<td><a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a></td>`
-				temp += '</tr>'
+				temp += `
+					<tr>
+						<td>${zadanie.przed}</td>
+						<td>${zadanie.dataZ}</td>
+						<td>${zadanie.dataO}</td>
+						<td>
+							<a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a>
+						</td>
+					</tr>
+				`
 			}
 		})
-		if(temp === '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'){
+		if(temp.length === 101){
 			temp += '<tr><td colspan="4" style="text-align: center">Brak zadań domowych</td></tr>'
 		}
 		data.zadaniaRendered = temp
@@ -360,16 +375,101 @@ function zadania_nadchodzace(){
 function zadanie(recordID){
 	client.pracaDomowa(recordID).then(zadanie => {
 		zadanie = zadanie.praca
-		var tmp = []
-		tmp.push(`<h4>${zadanie.tytul}</h4>`)
-		tmp.push(`Przedmiot: ${zadanie.przedNazwa}`)
-		tmp.push(`Data zadania: ${zadanie.dataZ}`)
-		tmp.push(`Data oddania: ${zadanie.dataO}`)
-		tmp.push(`Treść: ${zadanie.tresc.replace('\n', '<br />')}`)
-		document.querySelector('#zadanie').innerHTML = tmp.join('<br />')
+		document.querySelector('#zadanie').innerHTML = `
+			<h4>${zadanie.tytul}</h4><br />
+			Przedmiot: ${zadanie.przedNazwa}<br />
+			Data zadania: ${zadanie.dataZ}<br />
+			Treść: ${zadanie.tresc.replace('\n', '<br />')}
+		`
 		$('#zadanie-modal').modal()
 		$('#zadanie-modal').modal('open')
 	})
+}
+
+function uwagi(){
+	loadPage('uwagi')
+	var temp = '<tr><th>Data</th><th>Nauczyciel</th><th>Treść</th><th>Punkty</th></tr>'
+	client.uwagi().then(uwagi => {
+		var counter = uwagi.Poczatkowa
+		uwagi.SUwaga.forEach(uwaga => {
+			counter += parseInt(uwaga.Punkty, 10)
+			switch(uwaga.Typ){
+				case 'o':
+					uwaga.color = 'rgb(255, 255, 214)'
+					break
+				case 'n':
+					uwaga.color = 'rgb(255, 214, 214)'
+					break
+				case 'p':
+					uwaga.color = 'rgb(214, 255, 214)'
+					break
+			}
+			temp += `
+				<tr style="background-color: ${uwaga.color};">
+					<td style="white-space: nowrap;">${uwaga.Data}</td>
+					<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+					<td>${uwaga.Tresc}</td>
+					<td>${uwaga.Punkty}</td>
+				</tr>
+			`
+		})
+		data.uwagi = uwagi
+		data.uwagiRendered = temp
+		document.querySelector('#uwagi').innerHTML = temp
+		document.querySelector('#punkty').innerHTML += counter
+	})
+}
+
+function uwagi_filter(filter){
+	var temp = '<tr><th>Data</th><th>Nauczyciel</th><th>Treść</th><th>Punkty</th></tr>'
+	data.uwagi.SUwaga.forEach(uwaga => {
+		switch(uwaga.Typ){
+			case 'o':
+				if(filter === 'neutralne'){
+					uwaga.color = 'rgb(255, 255, 214)'
+					temp += `
+						<tr style="background-color: ${uwaga.color};">
+							<td style="white-space: nowrap;">${uwaga.Data}</td>
+							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+							<td>${uwaga.Tresc}</td>
+							<td>${uwaga.Punkty}</td>
+						</tr>
+					`
+				}
+				break
+			case 'n':
+				if(filter === 'nagany'){
+					uwaga.color = 'rgb(255, 214, 214)'
+					temp += `
+						<tr style="background-color: ${uwaga.color};">
+							<td style="white-space: nowrap;">${uwaga.Data}</td>
+							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+							<td>${uwaga.Tresc}</td>
+							<td>${uwaga.Punkty}</td>
+						</tr>
+					`
+				}
+				break
+			case 'p':
+				if(filter === 'pochwaly'){
+					uwaga.color = 'rgb(214, 255, 214)'
+					temp += `
+						<tr style="background-color: ${uwaga.color};">
+							<td style="white-space: nowrap;">${uwaga.Data}</td>
+							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+							<td>${uwaga.Tresc}</td>
+							<td>${uwaga.Punkty}</td>
+						</tr>
+					`
+				}
+				break
+		}
+	})
+	document.querySelector('#uwagi').innerHTML = temp
+}
+
+function uwagi_wszystkie(){
+	document.querySelector('#uwagi').innerHTML = data.uwagiRendered
 }
 
 function markToInt(ocena){
