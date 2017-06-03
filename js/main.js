@@ -12,7 +12,7 @@ $(() => {
 	}
 	container = document.querySelector('main')
 	if(typeof data.username === 'string' && typeof data.hash === 'string'){
-		// TODO: dodać preloader
+		loadPage('preloader')
 		idziennik({username: data.username, hash: data.hash})
 		.then(cl => {
 			client = cl
@@ -39,7 +39,6 @@ function login(){
 	}
 	document.querySelector('#loginbtn').parentNode.classList.add('disabled')
 	document.querySelector('#status').innerHTML = 'Loguję...'
-	// TODO: dodać preloader
 	idziennik({username: document.querySelector('#username').value, password: document.querySelector('#password').value})
 	.then(cl => {
 		data.username = cl.name
@@ -348,7 +347,11 @@ function zadania(){
 			}
 		})
 		if(temp.length === 101){
-			temp += '<tr><td colspan="4" style="text-align: center">Brak zadań domowych</td></tr>'
+			temp += `
+				<tr>
+					<td colspan="4" style="text-align: center">Brak zadań domowych</td>
+				</tr>
+				`
 		}
 		data.zadaniaRendered = temp
 		document.querySelector('#zadania').innerHTML = temp
@@ -472,6 +475,38 @@ function uwagi_wszystkie(){
 	document.querySelector('#uwagi').innerHTML = data.uwagiRendered
 }
 
+function sprawdziany(date){
+	loadPage('sprawdziany')
+	var temp = `
+	<tr>
+		<th>Data</th>
+		<th>Przedmiot</th>
+		<th>Rodzaj</th>
+		<th>Zakres</th>
+	</tr>
+	`
+	client.sprawdziany(typeof date === 'object' ? date : new Date()).then(sprawdziany => {
+		sprawdziany.ListK.forEach(sprawdzian => {
+			temp += `
+				<tr>
+					<td style="white-space: nowrap;">${sprawdzian.data}</td>
+					<td>${sprawdzian.przedmiot}</td>
+					<td style="white-space: nowrap;">${sprawdzian.rodzaj}</td>
+					<td>${sprawdzian.zakres}</td>
+				</tr>
+			`
+		})
+		if(temp.length === 88){
+			temp += `
+				<tr>
+					<td colspan="4" style="text-align: center">Brak sprawdzianów w tym miesiącu</td>
+				</tr>
+				`
+		}
+		document.querySelector('#sprawdziany').innerHTML = temp
+	})
+}
+
 function markToInt(ocena){
 	if(ocena >= 95) return 6
 	if(ocena >= 85) return 5
@@ -484,7 +519,7 @@ function markToInt(ocena){
 function handleError(err, page){
 	if(err.toString().includes('Unauthorized')){
 		alert('Sesja wygasła. Loguję...')
-		// TODO: dodać preloader
+		loadPage('preloader')
 		console.log('Niezalogowany.')
 		idziennik({username: data.username, hash: data.hash})
 		.then(cl => {
@@ -500,7 +535,7 @@ function loadPage(page){
 	$('.button-collapse').sideNav('hide')
 	document.title = 'iDziennik: ' + page.charAt(0).toUpperCase() + page.slice(1)
 	document.querySelector('main').innerHTML = fs.readFileSync(path.join(__dirname, 'html', page + '.html'), 'utf8')
-	if(page !== 'login'){
+	if(page !== 'login' && page !== 'preloader'){
 		document.querySelector('#navbar').innerHTML = fs.readFileSync(path.join(__dirname, 'html', 'nav.html'), 'utf8')
 		document.querySelector('#nav-' + page).classList.add('active')
 		document.querySelector('#logout').innerHTML += client.name
