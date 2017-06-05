@@ -1,10 +1,11 @@
 var client, container, data
-const idziennik = require('idziennik');
-const fs = require('fs');
-const cryptojs = require('crypto-js');
-const path = require('path');
+const idziennik = require('idziennik')
+const fs = require('fs')
+const cryptojs = require('crypto-js')
+const path = require('path')
 
 $(() => {
+	document.querySelector('footer').children[0].children[0].innerHTML += '; version: ' + require('./package.json').version
 	try {
 		data = JSON.parse(fs.readFileSync(path.join(require('os').homedir(), '.idziennik'), 'utf8'))
 	} catch(err) {
@@ -544,6 +545,101 @@ function sprawdziany(date){
 		}
 		document.querySelector('#sprawdziany').innerHTML = temp
 	})
+}
+
+function komunikator(tryb){
+	loadPage('komunikator')
+	client[tryb]().then(wiadomosci => {
+		console.log(wiadomosci)
+
+		switch(tryb){
+			case 'odebrane':
+				var temp = `
+					<tr>
+						<th>Data</th>
+						<th>Nadawca</th>
+						<th>Temat</th>
+					</tr>
+				`
+				break
+			case 'wyslane':
+				var temp = `
+					<tr>
+						<th>Data</th>
+						<th>Odbiorca</th>
+						<th>Temat</th>
+					</tr>
+				`
+				break
+		}
+		wiadomosci.ListK.forEach(wiadomosc => {
+			temp += `
+				<tr>
+					<td style="white-space: nowrap;">${wiadomosc.DataNadania}</td>
+					<td style="white-space: nowrap;">${wiadomosc.Nadawca}</td>
+					<td><a href="javascript:wiadomosc('${wiadomosc._recordId}')">${wiadomosc.Tytul}</td>
+				</tr>
+			`
+		})
+		document.querySelector('#table').innerHTML = temp
+	})
+}
+
+function wiadomosc(id){
+	client.wiadomosc(id).then(wiadomosc => {
+		document.querySelector('#modal-content').innerHTML = `
+			<h4>${wiadomosc.Wiadomosc.Tytul}</h4>
+			Nadawca: ${wiadomosc.Wiadomosc.Nadawca}<br />
+			Data nadania: ${wiadomosc.Wiadomosc.DataNadania}<br />
+			Data odczytania: ${wiadomosc.Wiadomosc.DataOdczytania}<br /><br />
+			${wiadomosc.Wiadomosc.Text.replace('\n', '<br />')}
+		`
+		$('#modal').modal()
+		$('#modal').modal('open')
+		console.log(wiadomosc)
+	})
+}
+
+function napisz(){
+	loadPage('napisz')
+	client.odbiorcy().then(odbiorcy => {
+		console.log(odbiorcy)
+		var klasy = {}, rodzice = {}
+		odbiorcy.ListK_Klasy.forEach(klasa => {
+			klasy[klasa.IdKlasa] = klasa
+		})
+		odbiorcy.ListK_Pracownicy.forEach(pracownik => {
+			document.querySelector('#collection-nauczyciele').innerHTML += `
+				<a href="javascript:nowa('${pracownik.Id}')" class="collection-item">
+					${pracownik.ImieNazwisko} (${pracownik.ListaTypow.join(', ')})
+				</a>
+			`
+		})
+		odbiorcy.ListK_Opiekunowie.forEach(opiekun => {
+			rodzice[opiekun.Id] = opiekun
+			document.querySelector('#collection-rodzice').innerHTML += `
+				<a href="javascript:nowa('${opiekun.Id}')" class="collection-item">
+					${opiekun.ImieNazwisko} (${klasy[opiekun.IdKlasa].Jedn}:${klasy[opiekun.IdKlasa].Klasa})
+				</a>
+			`
+		})
+		odbiorcy.ListK_Uczniow.forEach(uczen => {
+			var rodziceUcznia = []
+			if(typeof rodzice[uczen.Matka] === 'object') rodziceUcznia.push('matka - ' + rodzice[uczen.Matka].ImieNazwisko)
+			if(typeof rodzice[uczen.Ojciec] === 'object') rodziceUcznia.push('ojciec - ' + rodzice[uczen.Ojciec].ImieNazwisko)
+			document.querySelector('#collection-uczniowie').innerHTML += `
+				<a href="javascript:nowa('')" class="collection-item">
+					${uczen.ImieNazwisko} (${klasy[uczen.IdKlasa].Jedn}:${klasy[uczen.IdKlasa].Klasa})<br />
+					${rodziceUcznia.join(', ')}
+				</a>
+			`
+		})
+		$('.collapsible').collapsible();
+	})
+}
+
+function nowa(){
+	alert('In progress...')
 }
 
 function markToInt(ocena){
