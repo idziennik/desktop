@@ -191,9 +191,28 @@ function pulpit(){
 
 function plan(date){
 	loadPage('plan')
+	var $input = $('#date').pickadate({
+		selectMonths: true,
+		selectYears: 15,
+		today: 'Dzisiaj',
+		clear: 'Wyczyść',
+		close: 'Zamknij',
+		monthsFull: [ 'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień' ],
+		monthsShort: [ 'sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru' ],
+		weekdaysFull: [ 'niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota' ],
+		weekdaysShort: [ 'niedz.', 'pn.', 'wt.', 'śr.', 'cz.', 'pt.', 'sob.' ],
+		firstDay: 1,
+		format: 'd mmmm yyyy',
+		formatSubmit: 'yyyy/mm/dd',
+		onSet: event => {
+			if (event.select) {
+				plan(new Date(picker.get('select', 'yyyy/mm/dd')))
+			}
+		}
+	})
+	var picker = $input.pickadate('picker')
 	var lekcje = []
-	if(!date) var date = new Date()
-	client.plan(date).then(plan => {
+	client.plan(typeof date === 'object' ? date : new Date()).then(plan => {
 		var descBase = '<span style="color: #ff3300">'
 		plan.Przedmioty.forEach(lekcja => {
 			var tmp = []
@@ -477,6 +496,26 @@ function uwagi_wszystkie(){
 
 function sprawdziany(date){
 	loadPage('sprawdziany')
+	var $input = $('#date').pickadate({
+		selectMonths: true,
+		selectYears: 15,
+		today: 'Dzisiaj',
+		clear: 'Wyczyść',
+		close: 'Zamknij',
+		monthsFull: [ 'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień' ],
+		monthsShort: [ 'sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru' ],
+		weekdaysFull: [ 'niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota' ],
+		weekdaysShort: [ 'niedz.', 'pn.', 'wt.', 'śr.', 'cz.', 'pt.', 'sob.' ],
+		firstDay: 1,
+		format: 'd mmmm yyyy',
+		formatSubmit: 'yyyy/mm/dd',
+		onSet: event => {
+			if (event.select) {
+				sprawdziany(new Date(picker.get('select', 'yyyy/mm/dd')))
+			}
+		}
+	})
+	var picker = $input.pickadate('picker')
 	var temp = `
 	<tr>
 		<th>Data</th>
