@@ -675,7 +675,7 @@ function wyslij(){
 		document.querySelector('#napisz-odbiorca-id').value,
 		document.querySelector('#napisz-temat').value,
 		document.querySelector('#napisz-tresc').value,
-		document.querySelector('#napisz-potwierdzenie').checked,
+		document.querySelector('#napisz-potwierdzenie').checked
 	).then(m => console.log('wyslij', m))
 }
 
