@@ -1,5 +1,6 @@
 <div class="container">
 	<div class="section">
+		<a class="btn waves-effect waves-light" href="javascript:napisz_fullList()" id="napisz-fulllist-btn">Załaduj listę uczniów/rodziców</a>
 		<ul class="collapsible" data-collapsible="accordion">
 			<li>
 				<div class="collapsible-header">
@@ -30,8 +31,16 @@
 </div>
 <div id="modal" class="modal">
 	<div class="modal-content" id="modal-content">
+		<input disabled id="napisz-odbiorca" />
+		<input disabled id="napisz-odbiorca-id" />
+		<input type="text" id="napisz-temat" placeholder="Temat" />
+		<textarea id="napisz-tresc" class="materialize-textarea" placeholder="Treść"></textarea>
+		<input type="checkbox" class="filled-in" id="napisz-potwierdzenie" />
+		<label for="napisz-potwierdzenie">Wymagaj potwierdzenia</label>
+
 	</div>
 	<div class="modal-footer">
-		<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Zamknij</a>
+		<a href="#!" class="modal-action modal-close waves-effect waves-light btn-flat">Zamknij</a>
+		<a href="javascript:wyslij()" class="modal-action modal-close waves-effect waves-light btn-flat">Wyślij</a>
 	</div>
 </div>

@@ -42,6 +42,7 @@ function login(){
 	document.querySelector('#status').innerHTML = 'Loguję...'
 	idziennik({username: document.querySelector('#username').value, password: document.querySelector('#password').value})
 	.then(cl => {
+		console.log('client', cl)
 		data.username = cl.name
 		data.hash = cryptojs.MD5(cl.name.toLowerCase() + document.querySelector('#password').value).toString(cryptojs.enc.Hex)
 		fs.writeFileSync(require('os').homedir() + '/.idziennik', JSON.stringify(data), 'utf8')
@@ -68,6 +69,7 @@ function pulpit(){
 	var j = {lekcje: {arr: []}, sprawdziany: {arr: []}, zadania: {arr: []}, wydarzenia: {arr: []}}
 
 	client.plan(new Date()).then(plan => {
+		console.log('pulpit: plan', plan)
 		d.dzien = new Date().getDay() === 0 ? 7 : new Date().getDay()
 		j.dzien = d.dzien === 7 ? 0 : d.dzien + 1
 		plan.Przedmioty.forEach(lekcja => {
@@ -102,6 +104,7 @@ function pulpit(){
 		}
 	}).then(plan => {
 		if(plan){
+			console.log('pulpit: plan 2', plan)
 			plan.Przedmioty.forEach(lekcja => {
 				if(lekcja.DzienTygodnia === j.dzien){
 					if(lekcja.TypZastepstwa !== -1){
@@ -118,6 +121,7 @@ function pulpit(){
 		}
 		return client.sprawdziany(new Date())
 	}).then(sprawdziany => {
+		console.log('pulpit: sprawdziany', sprawdziany)
 		d.date = new Date()
 		d.date.setHours(d.date.getHours() - d.date.getTimezoneOffset() / 60)
 		j.date = new Date(new Date().getTime()+86400000)
@@ -143,6 +147,7 @@ function pulpit(){
 		}
 	}).then(sprawdziany => {
 		if(sprawdziany){
+			console.log('pulpit: sprawdziany 2', sprawdziany)
 			sprawdziany.ListK.forEach(sprawdzian => {
 				if(sprawdzian.data === d.date.toJSON().split('T')[0]){
 					d.sprawdziany.arr.push(`${sprawdzian.rodzaj} - ${sprawdzian.rodzaj}: ${sprawdzian.zakres}`)
@@ -157,6 +162,7 @@ function pulpit(){
 		}
 		return client.praceDomowe(new Date())
 	}).then(zadania => {
+		console.log('pulpit: zadania', zadania)
 		zadania.ListK.forEach(zadanie => {
 			if(zadanie.dataO === d.date.toJSON().split('T')[0]){
 				d.zadania.arr.push(`${zadanie.przed}: ${zadanie.tytul}`)
@@ -173,6 +179,7 @@ function pulpit(){
 		}
 		return client.wydarzenia()
 	}).then(wydarzenia => {
+		console.log('pulpit: wydarzenia', wydarzenia)
 		wydarzenia.ListK.forEach(wydarzenie => {
 			if(wydarzenie.data === d.date.toJSON().split('T')[0]){
 				d.wydarzenia.arr.push(wydarzenie.info)
@@ -214,6 +221,7 @@ function plan(date){
 	var picker = $input.pickadate('picker')
 	var lekcje = []
 	client.plan(typeof date === 'object' ? date : new Date()).then(plan => {
+		console.log('plan', plan)
 		var descBase = '<span style="color: #ff3300">'
 		plan.Przedmioty.forEach(lekcja => {
 			var tmp = []
@@ -270,6 +278,7 @@ function plan(date){
 function oceny(){
 	loadPage('oceny')
 	client.oceny().then(oceny => {
+		console.log('oceny', oceny)
 		data.oceny = oceny
 		var srednia = 0, sredniaCounter = 0
 		var temp = ''
@@ -351,6 +360,7 @@ function zadania(){
 	</tr>
 	`
 	client.praceDomowe(new Date()).then(zadania => {
+		console.log('zadania', zadania)
 		data.zadania = zadania
 		zadania.ListK.forEach(zadanie => {
 			if(new Date(zadanie.dataO) > new Date()){
@@ -397,6 +407,7 @@ function zadania_nadchodzace(){
 
 function zadanie(recordID){
 	client.pracaDomowa(recordID).then(zadanie => {
+		console.log('zadanie', zadanie)
 		zadanie = zadanie.praca
 		document.querySelector('#zadanie').innerHTML = `
 			<h4>${zadanie.tytul}</h4><br />
@@ -413,6 +424,7 @@ function uwagi(){
 	loadPage('uwagi')
 	var temp = '<tr><th>Data</th><th>Nauczyciel</th><th>Treść</th><th>Punkty</th></tr>'
 	client.uwagi().then(uwagi => {
+		console.log('uwagi', uwagi)
 		var counter = uwagi.Poczatkowa
 		uwagi.SUwaga.forEach(uwaga => {
 			counter += parseInt(uwaga.Punkty, 10)
@@ -526,6 +538,7 @@ function sprawdziany(date){
 	</tr>
 	`
 	client.sprawdziany(typeof date === 'object' ? date : new Date()).then(sprawdziany => {
+		console.log('sprawdziany', sprawdziany)
 		sprawdziany.ListK.forEach(sprawdzian => {
 			temp += `
 				<tr>
@@ -550,8 +563,7 @@ function sprawdziany(date){
 function komunikator(tryb){
 	loadPage('komunikator')
 	client[tryb]().then(wiadomosci => {
-		console.log(wiadomosci)
-
+		console.log('wiadomosci', wiadomosci)
 		switch(tryb){
 			case 'odebrane':
 				var temp = `
@@ -587,6 +599,7 @@ function komunikator(tryb){
 
 function wiadomosc(id){
 	client.wiadomosc(id).then(wiadomosc => {
+		console.log('wiadomosc', wiadomosc)
 		document.querySelector('#modal-content').innerHTML = `
 			<h4>${wiadomosc.Wiadomosc.Tytul}</h4>
 			Nadawca: ${wiadomosc.Wiadomosc.Nadawca}<br />
@@ -602,44 +615,68 @@ function wiadomosc(id){
 
 function napisz(){
 	loadPage('napisz')
+	console.time('downloading')
 	client.odbiorcy().then(odbiorcy => {
-		console.log(odbiorcy)
-		var klasy = {}, rodzice = {}
-		odbiorcy.ListK_Klasy.forEach(klasa => {
-			klasy[klasa.IdKlasa] = klasa
-		})
+		console.log('odbiorcy', odbiorcy)
+		data.odbiorcy = odbiorcy
+		console.timeEnd('downloading')
+		console.time('processing')
 		odbiorcy.ListK_Pracownicy.forEach(pracownik => {
 			document.querySelector('#collection-nauczyciele').innerHTML += `
-				<a href="javascript:nowa('${pracownik.Id}')" class="collection-item">
+				<a href="javascript:nowa('${pracownik.Id}', '${pracownik.ImieNazwisko}')" class="collection-item">
 					${pracownik.ImieNazwisko} (${pracownik.ListaTypow.join(', ')})
 				</a>
 			`
 		})
-		odbiorcy.ListK_Opiekunowie.forEach(opiekun => {
-			rodzice[opiekun.Id] = opiekun
-			document.querySelector('#collection-rodzice').innerHTML += `
-				<a href="javascript:nowa('${opiekun.Id}')" class="collection-item">
-					${opiekun.ImieNazwisko} (${klasy[opiekun.IdKlasa].Jedn}:${klasy[opiekun.IdKlasa].Klasa})
-				</a>
-			`
-		})
-		odbiorcy.ListK_Uczniow.forEach(uczen => {
-			var rodziceUcznia = []
-			if(typeof rodzice[uczen.Matka] === 'object') rodziceUcznia.push('matka - ' + rodzice[uczen.Matka].ImieNazwisko)
-			if(typeof rodzice[uczen.Ojciec] === 'object') rodziceUcznia.push('ojciec - ' + rodzice[uczen.Ojciec].ImieNazwisko)
-			document.querySelector('#collection-uczniowie').innerHTML += `
-				<a href="javascript:nowa('')" class="collection-item">
-					${uczen.ImieNazwisko} (${klasy[uczen.IdKlasa].Jedn}:${klasy[uczen.IdKlasa].Klasa})<br />
-					${rodziceUcznia.join(', ')}
-				</a>
-			`
-		})
+		console.timeEnd('processing')
 		$('.collapsible').collapsible();
 	})
 }
 
-function nowa(){
-	alert('In progress...')
+function napisz_fullList(){
+	console.time('processing-full')
+	var klasy = {}, rodzice = {}
+	data.odbiorcy.ListK_Klasy.forEach(klasa => {
+		klasy[klasa.IdKlasa] = klasa.Jedn + ' : ' + klasa.Klasa
+	})
+	data.odbiorcy.ListK_Opiekunowie.forEach(opiekun => {
+		rodzice[opiekun.Id] = opiekun
+		document.querySelector('#collection-rodzice').innerHTML += `
+			<a href="javascript:nowa('${opiekun.Id}', '${opiekun.ImieNazwisko}')" class="collection-item">
+				${opiekun.ImieNazwisko} (${klasy[opiekun.IdKlasa]})
+			</a>
+		`
+	})
+	data.odbiorcy.ListK_Uczniow.forEach(uczen => {
+		var rodziceUcznia = []
+		if(typeof rodzice[uczen.Matka] === 'object') rodziceUcznia.push('matka - ' + rodzice[uczen.Matka].ImieNazwisko)
+		if(typeof rodzice[uczen.Ojciec] === 'object') rodziceUcznia.push('ojciec - ' + rodzice[uczen.Ojciec].ImieNazwisko)
+		document.querySelector('#collection-uczniowie').innerHTML += `
+			<a href="javascript:nowa('', '${uczen.ImieNazwisko}')" class="collection-item">
+				${uczen.ImieNazwisko} (${klasy[uczen.IdKlasa]})<br />
+				${rodziceUcznia.join(', ')}
+			</a>
+		`
+	})
+	console.timeEnd('processing-full')
+	document.querySelector('#napisz-fulllist-btn').classList.add('disabled')
+	$('.collapsible').collapsible();
+}
+
+function nowa(id, nazwa){
+	document.querySelector('#napisz-odbiorca').value = nazwa
+	document.querySelector('#napisz-odbiorca-id').value = id
+	$('#modal').modal()
+	$('#modal').modal('open')
+}
+
+function wyslij(){
+	client.wyslij(
+		document.querySelector('#napisz-odbiorca-id').value,
+		document.querySelector('#napisz-temat').value,
+		document.querySelector('#napisz-tresc').value,
+		document.querySelector('#napisz-potwierdzenie').checked,
+	).then(m => console.log('wyslij', m))
 }
 
 function markToInt(ocena){
