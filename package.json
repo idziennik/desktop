@@ -1,54 +1,55 @@
 {
-	"name": "idziennik-electron",
-	"productName": "iDziennik",
-	"version": "1.4.2",
-	"description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
-	"main": "index.js",
-	"scripts": {
-		"test": "true"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Bjornskjald/idziennik-electron.git"
-	},
-	"author": {
-		"name":"Bjornskjald",
-		"email":"github@bjorn.ml"
-	},
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/Bjornskjald/idziennik-electron/issues"
-	},
-	"build": {
-		"appId": "ml.bjorn.idziennik.electron",
-		"files": [
-			"css/",
-			"js/",
-			"html/",
-			"fonts/",
-			"icons/",
-			"node_modules/",
-			"main.html",
-			"package.json",
-			"index.js"
-		],
-		"linux": {
-			"category": "Utility;Network",
-			"target": [
-				"AppImage",
-				"deb"
-			],
-			"icon": "icons"
-		}
-	},
-	"homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
-	"dependencies": {
-		"crypto-js": "^3.1.9-1",
-		"idziennik": "^4.2.0",
-		"jquery": "^3.2.1",
-		"materialize-css": "^0.98.2"
-	},
-	"devDependencies": {
-		"electron": "^1.6.10"
-	}
+  "name": "idziennik-electron",
+  "productName": "iDziennik",
+  "version": "1.4.2",
+  "description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
+  "main": "index.js",
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bjornskjald/idziennik-electron.git"
+  },
+  "author": {
+    "name": "Bjornskjald",
+    "email": "github@bjorn.ml"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bjornskjald/idziennik-electron/issues"
+  },
+  "build": {
+    "appId": "ml.bjorn.idziennik.electron",
+    "files": [
+      "css/",
+      "js/",
+      "html/",
+      "fonts/",
+      "icons/",
+      "node_modules/",
+      "main.html",
+      "package.json",
+      "index.js"
+    ],
+    "linux": {
+      "category": "Utility;Network",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "icons"
+    }
+  },
+  "homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "idziennik": "^4.2.0",
+    "jquery": "^3.2.1",
+    "materialize-css": "^0.98.2"
+  },
+  "devDependencies": {
+    "electron": "^1.6.10",
+    "electron-builder": "^18.5.1"
+  }
 }
