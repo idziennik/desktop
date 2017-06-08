@@ -280,32 +280,32 @@ function oceny(){
 	client.oceny().then(oceny => {
 		console.log('oceny', oceny)
 		data.oceny = oceny
-		var srednia = 0, sredniaCounter = 0
-		var temp = ''
+		var temp = '', srednia = 0, sredniaCounter = 0
 		oceny.Przedmioty.forEach(przedmiot => {
-			var tmp = []
-			przedmiot.Oceny.forEach(ocena => {
-				var desc = `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
-				if(ocena.Typ === 0){
-					tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
-				}
-			})
-
 			temp += `
 				<tr>
 					<td>${przedmiot.Przedmiot}</td>
-					<td>${tmp.join(' ')}</td>
+					<td>
+			`
+			przedmiot.Oceny.forEach(ocena => {
+				if(ocena.Typ === 0){
+					temp += `<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('`
+					temp += `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
+					temp += `', 5000)">${ocena.Ocena}&nbsp;</a>`
+				}
+			})
+			temp += `
+					</td>
 					<td>${przedmiot.SrednieCaloroczne}</td>
 					<td>${markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))}</td>
 				</tr>
 			`
-
 			srednia += markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))
 			sredniaCounter++
 		})
 		srednia = Math.round(srednia / sredniaCounter * 100) / 100
 		data.ocenyRendered = temp
-		document.querySelector('#oceny').innerHTML = temp
+		document.querySelector('#table').innerHTML = temp
 		document.querySelector('#srednia').innerHTML += srednia
 	}).catch(err => handleError(err, 'oceny'))
 }
@@ -314,19 +314,28 @@ function oceny_filter(filter){
 	var temp = ''
 	var query = filter === 'szukaj' ? document.querySelector('#szukaj').value : undefined
 	data.oceny.Przedmioty.forEach(przedmiot => {
+		temp += `
+			<tr>
+				<td>${przedmiot.Przedmiot}</td>
+				<td>
+		`
 		var tmp = []
 		przedmiot.Oceny.forEach(ocena => {
-			var desc = `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
 			if(ocena.Typ === 0){
 				switch(filter){
 					case 'ostatniMiesiac': 
 						if(Math.abs(new Date() - new Date(ocena.Data_wystaw.replace(/-/g, '/'))) < 2678400000){
-							tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
+							temp += `<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('`
+							temp += `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
+							temp += `', 5000)">${ocena.Ocena}&nbsp;</a>`
 						}
 						break
 					case 'szukaj':
 						if(ocena.Kategoria.toLowerCase().includes(query.toLowerCase()) || ocena.Ocena.toLowerCase().includes(query.toLowerCase())){
-							tmp.push(`<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('${desc}', 5000)">${ocena.Ocena}</a>`)
+							console.log(ocena.Kategoria, ocena.Ocena, query)
+							temp += `<a href="#!" style="color:#${ocena.Kolor}" onclick="Materialize.toast('`
+							temp += `Ocena: ${ocena.Ocena}<br />Kategoria: ${ocena.Kategoria}<br />Waga: ${ocena.Waga}<br />Data: ${ocena.Data_wystaw}`
+							temp += `', 5000)">${ocena.Ocena}&nbsp;</a>`
 						}
 						break
 
@@ -334,31 +343,22 @@ function oceny_filter(filter){
 			}
 		})
 		temp += `
-			<tr>
-				<td>${przedmiot.Przedmiot}</td>
-				<td>${tmp.join(' ')}</td>
+				</td>
 				<td>${przedmiot.SrednieCaloroczne}</td>
 				<td>${markToInt(parseInt(przedmiot.SrednieCaloroczne, 10))}</td>
 			</tr>
 		`
 	})
-	document.querySelector('#oceny').innerHTML = temp
+	document.querySelector('#table').innerHTML = temp
 }
 
 function oceny_wszystkie(){
-	document.querySelector('#oceny').innerHTML = data.ocenyRendered
+	document.querySelector('#table').innerHTML = data.ocenyRendered
 }
 
 function zadania(){
 	loadPage('zadania')
-	var temp = `
-	<tr>
-		<th>Przedmiot</th>
-		<th>Data zadania</th>
-		<th>Data oddania</th>
-		<th>Tytuł</th>
-	</tr>
-	`
+	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
 	client.praceDomowe(new Date()).then(zadania => {
 		console.log('zadania', zadania)
 		data.zadania = zadania
@@ -376,33 +376,44 @@ function zadania(){
 				`
 			}
 		})
-		if(temp.length === 101){
+		if(temp.length === 83){
 			temp += `
 				<tr>
 					<td colspan="4" style="text-align: center">Brak zadań domowych</td>
 				</tr>
-				`
+			`
 		}
 		data.zadaniaRendered = temp
-		document.querySelector('#zadania').innerHTML = temp
-	})
+		document.querySelector('#table').innerHTML = temp
+	}).catch(err => handleError(err, 'zadania'))
 }
 
 function zadania_wszystkie(){
 	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
 	data.zadania.ListK.forEach(zadanie => {
-		temp += '<tr>'
-		temp += '<td>' + zadanie.przed + '</td>'
-		temp += '<td>' + zadanie.dataZ + '</td>'
-		temp += '<td>' + zadanie.dataO + '</td>'
-		temp += `<td><a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a></td>`
-		temp += '</tr>'
+		temp += `
+			<tr>
+				<td>${zadanie.przed}</td>
+				<td>${zadanie.dataZ}</td>
+				<td>${zadanie.dataO}</td>
+				<td>
+					<a href="javascript:zadanie(${zadanie._recordId})">${zadanie.tytul}</a>
+				</td>
+			</tr>
+		`
 	})
-	document.querySelector('#zadania').innerHTML = temp
+	if(temp.length === 84){
+		temp += `
+			<tr>
+				<td colspan="4" style="text-align: center">Brak zadań domowych</td>
+			</tr>
+		`
+	}
+	document.querySelector('#table').innerHTML = temp
 }
 
 function zadania_nadchodzace(){
-	document.querySelector('#zadania').innerHTML = data.zadaniaRendered
+	document.querySelector('#table').innerHTML = data.zadaniaRendered
 }
 
 function zadanie(recordID){
@@ -417,14 +428,14 @@ function zadanie(recordID){
 		`
 		$('#zadanie-modal').modal()
 		$('#zadanie-modal').modal('open')
-	})
+	}).catch(err => handleError(err, 'zadania'))
 }
 
 function uwagi(){
 	loadPage('uwagi')
-	var temp = '<tr><th>Data</th><th>Nauczyciel</th><th>Treść</th><th>Punkty</th></tr>'
 	client.uwagi().then(uwagi => {
 		console.log('uwagi', uwagi)
+		var temp = ''
 		var counter = uwagi.Poczatkowa
 		uwagi.SUwaga.forEach(uwaga => {
 			counter += parseInt(uwaga.Punkty, 10)
@@ -450,9 +461,9 @@ function uwagi(){
 		})
 		data.uwagi = uwagi
 		data.uwagiRendered = temp
-		document.querySelector('#uwagi').innerHTML = temp
+		document.querySelector('#uwagi').innerHTML += temp
 		document.querySelector('#punkty').innerHTML += counter
-	})
+	}).catch(err => handleError(err, 'uwagi'))
 }
 
 function uwagi_filter(filter){
@@ -529,16 +540,16 @@ function sprawdziany(date){
 		}
 	})
 	var picker = $input.pickadate('picker')
-	var temp = `
-	<tr>
-		<th>Data</th>
-		<th>Przedmiot</th>
-		<th>Rodzaj</th>
-		<th>Zakres</th>
-	</tr>
-	`
 	client.sprawdziany(typeof date === 'object' ? date : new Date()).then(sprawdziany => {
 		console.log('sprawdziany', sprawdziany)
+		var temp = `
+			<tr>
+				<th>Data</th>
+				<th>Przedmiot</th>
+				<th>Rodzaj</th>
+				<th>Zakres</th>
+			</tr>
+		`
 		sprawdziany.ListK.forEach(sprawdzian => {
 			temp += `
 				<tr>
@@ -549,19 +560,21 @@ function sprawdziany(date){
 				</tr>
 			`
 		})
-		if(temp.length === 88){
+		console.log(temp.length)
+		if(temp.length === 101){
 			temp += `
 				<tr>
 					<td colspan="4" style="text-align: center">Brak sprawdzianów w tym miesiącu</td>
 				</tr>
-				`
+			`
 		}
-		document.querySelector('#sprawdziany').innerHTML = temp
-	})
+		document.querySelector('#table').innerHTML += temp
+	}).catch(err => handleError(err, 'sprawdziany'))
 }
 
 function komunikator(tryb){
 	loadPage('komunikator')
+	if(!tryb) var tryb = 'odebrane'
 	client[tryb]().then(wiadomosci => {
 		console.log('wiadomosci', wiadomosci)
 		switch(tryb){
@@ -594,7 +607,7 @@ function komunikator(tryb){
 			`
 		})
 		document.querySelector('#table').innerHTML = temp
-	})
+	}).catch(err => handleError(err, 'komunikator'))
 }
 
 function wiadomosc(id){
@@ -610,7 +623,7 @@ function wiadomosc(id){
 		$('#modal').modal()
 		$('#modal').modal('open')
 		console.log(wiadomosc)
-	})
+	}).catch(err => handleError(err, 'komunikator'))
 }
 
 function napisz(){
@@ -630,7 +643,7 @@ function napisz(){
 		})
 		console.timeEnd('processing')
 		$('.collapsible').collapsible();
-	})
+	}).catch(err => handleError(err, 'komunikator'))
 }
 
 function napisz_fullList(){
@@ -676,8 +689,103 @@ function wyslij(){
 		document.querySelector('#napisz-temat').value,
 		document.querySelector('#napisz-tresc').value,
 		document.querySelector('#napisz-potwierdzenie').checked
-	).then(m => console.log('wyslij', m))
+	).then(m => console.log('wyslij', m)).catch(err => handleError(err, 'komunikator'))
 }
+
+function obecnosci(date){
+	loadPage('obecnosci')
+	var $input = $('#date').pickadate({
+		selectMonths: true,
+		selectYears: 15,
+		today: 'Dzisiaj',
+		clear: 'Wyczyść',
+		close: 'Zamknij',
+		monthsFull: [ 'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień' ],
+		monthsShort: [ 'sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru' ],
+		weekdaysFull: [ 'niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota' ],
+		weekdaysShort: [ 'niedz.', 'pn.', 'wt.', 'śr.', 'cz.', 'pt.', 'sob.' ],
+		firstDay: 1,
+		format: 'd mmmm yyyy',
+		formatSubmit: 'yyyy/mm/dd',
+		onSet: event => {
+			if (event.select) {
+				obecnosci(new Date(picker.get('select', 'yyyy/mm/dd')))
+			}
+		}
+	})
+	var picker = $input.pickadate('picker')
+	var date = typeof date === 'object' ? date : new Date()
+	var temp = ''
+	var miesiac = []
+	var offset = new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+	if(offset === 0){
+		offset = 7
+	} else {
+		offset--
+	}
+	for(var i = 0; i < offset; i++){
+		miesiac.push({godziny: [], dzien: 0})
+	}
+	client.obecnosci(date).then(obecnosci => {
+		console.log(obecnosci)
+		obecnosci.Obecnosci.forEach(lekcja => {
+			switch(lekcja.TypObecnosci){
+				case 'T':
+					var color = '#CCFFCC' // zielony
+					break
+				case 'N':
+					var color = '#FFAD99' // czerwony
+					break
+				case 'F':
+				case 'B':
+					var color = '#E3E3E3' // szary
+					break
+				case 'S':
+					var color = '#FFFFAA' // żółty
+					break
+				case 'U':
+					var color = '#FFE099' // pomarańczowy
+					break
+				case 'Z':
+					var color = '#A8BEFF' // niebieski
+					break
+				case 'ZO':
+					var color = '#FF69B4' // fioletowy
+					break
+			}
+			if(typeof miesiac[lekcja.Dzien - 1 + offset] !== 'object'){
+				miesiac[lekcja.Dzien - 1 + offset] = {godziny: [], dzien: lekcja.Dzien}
+			}
+			miesiac[lekcja.Dzien - 1 + offset].godziny[lekcja.Godzina-1] = {
+				opis: `${lekcja.Przedmiot}`,
+				color: color
+			}
+		})
+		console.log(miesiac)
+		for(var j = 0; j < miesiac.length; j += 7){
+			temp += '<tr>'
+			miesiac.slice(j, j+7).forEach(dzien => {
+				if(dzien.dzien !== 0){
+					temp += `<td style="vertical-align: top">${date.getFullYear()}-${date.getMonth()+1}-${dzien.dzien}<ul class="collection">`
+					for(var k = 0; k < dzien.godziny.length; k++){
+						var godzina = dzien.godziny[k]
+						if(typeof godzina === 'undefined'){
+							temp += `<li class="collection-item">&nbsp;</li>`
+						} else {
+							temp += `<li class="collection-item" style="background-color: ${godzina.color}; white-space: nowrap;">${godzina.opis}</li>`
+						}
+					}
+					temp += '</ul></td>'
+				} else {
+					temp += '<td></td>'
+				}
+			})
+			temp += '</tr>'
+		}
+		document.querySelector('#table').innerHTML = temp
+	}).catch(err => handleError(err, 'obecnosci'))
+}
+
 
 function markToInt(ocena){
 	if(ocena >= 95) return 6
