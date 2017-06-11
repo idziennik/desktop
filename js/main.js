@@ -231,7 +231,7 @@ function plan(date){
 			}
 			temp += '</tr>'
 		})
-		document.querySelector('#plan').innerHTML += temp
+		document.querySelector('#table').innerHTML = temp
 	}).catch(err => handleError(err, 'plan'))
 }
 
@@ -318,8 +318,8 @@ function oceny_wszystkie(){
 
 function zadania(){
 	loadPage('zadania')
-	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
 	client.praceDomowe(new Date()).then(zadania => {
+		var temp = ''
 		console.log('zadania', zadania)
 		data.zadania = zadania
 		zadania.ListK.forEach(zadanie => {
@@ -336,7 +336,7 @@ function zadania(){
 				`
 			}
 		})
-		if(temp.length === 83){
+		if(temp.length === 0){
 			temp += `
 				<tr>
 					<td colspan="4" style="text-align: center">Brak zadań domowych</td>
@@ -349,7 +349,7 @@ function zadania(){
 }
 
 function zadania_wszystkie(){
-	var temp = '<tr><th>Przedmiot</th><th>Data zadania</th><th>Data oddania</th><th>Tytuł</th></tr>'
+	var temp = ''
 	data.zadania.ListK.forEach(zadanie => {
 		temp += `
 			<tr>
@@ -362,7 +362,7 @@ function zadania_wszystkie(){
 			</tr>
 		`
 	})
-	if(temp.length === 84){
+	if(temp.length === 0){
 		temp += `
 			<tr>
 				<td colspan="4" style="text-align: center">Brak zadań domowych</td>
@@ -421,61 +421,30 @@ function uwagi(){
 		})
 		data.uwagi = uwagi
 		data.uwagiRendered = temp
-		document.querySelector('#uwagi').innerHTML += temp
+		document.querySelector('#table').innerHTML += temp
 		document.querySelector('#punkty').innerHTML += counter
 	}).catch(err => handleError(err, 'uwagi'))
 }
 
 function uwagi_filter(filter){
-	var temp = '<tr><th>Data</th><th>Nauczyciel</th><th>Treść</th><th>Punkty</th></tr>'
+	var temp = ''
 	data.uwagi.SUwaga.forEach(uwaga => {
-		switch(uwaga.Typ){
-			case 'o':
-				if(filter === 'neutralne'){
-					uwaga.color = 'rgb(255, 255, 214)'
-					temp += `
-						<tr style="background-color: ${uwaga.color};">
-							<td style="white-space: nowrap;">${uwaga.Data}</td>
-							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
-							<td>${uwaga.Tresc}</td>
-							<td>${uwaga.Punkty}</td>
-						</tr>
-					`
-				}
-				break
-			case 'n':
-				if(filter === 'nagany'){
-					uwaga.color = 'rgb(255, 214, 214)'
-					temp += `
-						<tr style="background-color: ${uwaga.color};">
-							<td style="white-space: nowrap;">${uwaga.Data}</td>
-							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
-							<td>${uwaga.Tresc}</td>
-							<td>${uwaga.Punkty}</td>
-						</tr>
-					`
-				}
-				break
-			case 'p':
-				if(filter === 'pochwaly'){
-					uwaga.color = 'rgb(214, 255, 214)'
-					temp += `
-						<tr style="background-color: ${uwaga.color};">
-							<td style="white-space: nowrap;">${uwaga.Data}</td>
-							<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
-							<td>${uwaga.Tresc}</td>
-							<td>${uwaga.Punkty}</td>
-						</tr>
-					`
-				}
-				break
+		if(uwaga.Typ === filter){
+			temp += `
+				<tr style="background-color: ${uwaga.color};">
+					<td style="white-space: nowrap;">${uwaga.Data}</td>
+					<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+					<td>${uwaga.Tresc}</td>
+					<td>${uwaga.Punkty}</td>
+				</tr>
+			`
 		}
 	})
-	document.querySelector('#uwagi').innerHTML = temp
+	document.querySelector('#table').innerHTML = temp
 }
 
 function uwagi_wszystkie(){
-	document.querySelector('#uwagi').innerHTML = data.uwagiRendered
+	document.querySelector('#table').innerHTML = data.uwagiRendered
 }
 
 function sprawdziany(date){
@@ -502,14 +471,7 @@ function sprawdziany(date){
 	var picker = $input.pickadate('picker')
 	client.sprawdziany(typeof date === 'object' ? date : new Date()).then(sprawdziany => {
 		console.log('sprawdziany', sprawdziany)
-		var temp = `
-			<tr>
-				<th>Data</th>
-				<th>Przedmiot</th>
-				<th>Rodzaj</th>
-				<th>Zakres</th>
-			</tr>
-		`
+		var temp = ''
 		sprawdziany.ListK.forEach(sprawdzian => {
 			temp += `
 				<tr>
@@ -520,15 +482,14 @@ function sprawdziany(date){
 				</tr>
 			`
 		})
-		console.log(temp.length)
-		if(temp.length === 101){
+		if(temp.length === 0){
 			temp += `
 				<tr>
 					<td colspan="4" style="text-align: center">Brak sprawdzianów w tym miesiącu</td>
 				</tr>
 			`
 		}
-		document.querySelector('#table').innerHTML += temp
+		document.querySelector('#table').innerHTML = temp
 	}).catch(err => handleError(err, 'sprawdziany'))
 }
 
