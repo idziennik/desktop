@@ -2,18 +2,22 @@
 	<div class="section">
 		<h5 id="punkty">Liczba punktów: </h5><br />
 		<a href="javascript:uwagi_wszystkie()" class="btn waves-effect waves-light">Wszystkie</a>
-		<a href="javascript:uwagi_filter('pochwaly')" class="btn waves-effect waves-light">Pochwały</a>
-		<a href="javascript:uwagi_filter('neutralne')" class="btn waves-effect waves-light">Neutralne</a>
-		<a href="javascript:uwagi_filter('nagany')" class="btn waves-effect waves-light">Nagany</a>
+		<a href="javascript:uwagi_filter('p')" class="btn waves-effect waves-light">Pochwały</a>
+		<a href="javascript:uwagi_filter('o')" class="btn waves-effect waves-light">Neutralne</a>
+		<a href="javascript:uwagi_filter('n')" class="btn waves-effect waves-light">Nagany</a>
 		<br />
 		<br />
 		<table class="striped" id="uwagi">
-			<tr>
-				<th>Data</th>
-				<th>Nauczyciel</th>
-				<th>Treść</th>
-				<th>Punkty</th>
-			</tr>
+			<thead>
+				<tr>
+					<th>Data</th>
+					<th>Nauczyciel</th>
+					<th>Treść</th>
+					<th>Punkty</th>
+				</tr>
+			</thead>
+			<tbody id="table">
+			</tbody>
 		</table>
 	</div>
 </div>
