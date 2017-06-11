@@ -65,135 +65,95 @@ function login(){
 function pulpit(){
 	loadPage('pulpit')
 	
-	var d = {lekcje: {arr: []}, sprawdziany: {arr: []}, zadania: {arr: []}, wydarzenia: {arr: []}}
-	var j = {lekcje: {arr: []}, sprawdziany: {arr: []}, zadania: {arr: []}, wydarzenia: {arr: []}}
+	var d = {lekcje: 'Lekcje: <br />', sprawdziany: 'Sprawdziany: <br />', zadania: 'Zadania: <br />', wydarzenia: 'Wydarzenia: <br />'}
+	var j = {lekcje: 'Lekcje: <br />', sprawdziany: 'Sprawdziany: <br />', zadania: 'Zadania: <br />', wydarzenia: 'Wydarzenia: <br />'}
 
-	client.plan(new Date()).then(plan => {
+	d.date = new Date()
+	d.dzien = d.date.getDay() === 0 ? 7 : d.date.getDay()
+	d.jsondate = new Date(d.date)
+	d.jsondate.setHours(d.date.getHours() - d.date.getTimezoneOffset() / 60)
+	d.jsondate = d.jsondate.toJSON().split('T')[0]
+
+	j.date = new Date()
+	j.date.setDate(d.date.getDate() + 1)
+	j.dzien = d.dzien === 7 ? 1 : d.dzien + 1
+	j.jsondate = new Date(j.date)
+	j.jsondate.setHours(j.date.getHours() - j.date.getTimezoneOffset() / 60)
+	j.jsondate = j.jsondate.toJSON().split('T')[0]
+
+	client.plan(d.date).then(plan => {
 		console.log('pulpit: plan', plan)
-		d.dzien = new Date().getDay() === 0 ? 7 : new Date().getDay()
-		j.dzien = d.dzien === 7 ? 0 : d.dzien + 1
-		plan.Przedmioty.forEach(lekcja => {
-			if(lekcja.DzienTygodnia === d.dzien){
-				if(lekcja.TypZastepstwa !== -1){
-					d.lekcje.arr.push(`<span style="text-decoration: line-through">${lekcja.Godzina}. ${lekcja.Nazwa}</span>`)
-				} else {
-					d.lekcje.arr.push(`${lekcja.Godzina}. ${lekcja.Nazwa}`)
-				}
+		plan.Przedmioty.forEach(l => {
+			if (l.DzienTygodnia === d.dzien) {
+				d.lekcje += l.TypZastepstwa === -1 ? `${l.Godzina}. ${l.Nazwa}<br />` : `<span style="text-decoration: line-through">${l.Godzina}. ${l.Nazwa}</span> <br />`
 			}
-			if(d.dzien !== 7 && lekcja.DzienTygodnia === j.dzien){
-				if(lekcja.TypZastepstwa !== -1){
-					j.lekcje.arr.push(`<span style="text-decoration: line-through">${lekcja.Godzina}. ${lekcja.Nazwa}</span>`)
-				} else {
-					j.lekcje.arr.push(`${lekcja.Godzina}. ${lekcja.Nazwa}`)
-				}
+			if (j.dzien !== 1 && l.DzienTygodnia === j.dzien) {
+				j.lekcje += l.TypZastepstwa === -1 ? `${l.Godzina}. ${l.Nazwa}<br />` : `<span style="text-decoration: line-through">${l.Godzina}. ${l.Nazwa}</span> <br />`
 			}
 		})
-		if(d.lekcje.arr.length !== 0){
-			d.lekcje.arr.push('')
-			document.querySelector('#dzisiaj-plan').innerHTML = 'Lekcje: <br />' + d.lekcje.arr.join('<br />')
-		}
-		if(d.dzien === 7){
-			// Trzeba powtórzyć żądanie żeby pobrać plan na następny dzień (poniedziałek)
-			return client.plan(new Date(new Date().getTime()+86400000))
-		} else {
-			if(j.lekcje.arr.length !== 0){
-				j.lekcje.arr.push('')
-				document.querySelector('#jutro-plan').innerHTML = 'Lekcje: <br />' + j.lekcje.arr.join('<br />')
-			}
+
+		document.querySelector('#dzisiaj-plan').innerHTML = d.lekcje.length === 14 ? 'Brak lekcji' : d.lekcje
+
+		if (d.dzien !== 7) {
+			document.querySelector('#jutro-plan').innerHTML = j.lekcje.length === 14 ? 'Brak lekcji' : j.lekcje
 			return false
+		} else {
+			// Trzeba powtórzyć żądanie żeby pobrać plan na następny dzień (poniedziałek)
+			return client.plan(j.date)
 		}
 	}).then(plan => {
 		if(plan){
 			console.log('pulpit: plan 2', plan)
-			plan.Przedmioty.forEach(lekcja => {
-				if(lekcja.DzienTygodnia === j.dzien){
-					if(lekcja.TypZastepstwa !== -1){
-						j.lekcje.arr.push(`<span style="text-decoration: line-through">${lekcja.Godzina}. ${lekcja.Nazwa}</span>`)
-					} else {
-						j.lekcje.arr.push(`${lekcja.Godzina}. ${lekcja.Nazwa}`)
-					}
+			plan.Przedmioty.forEach(l => {
+				if (l.DzienTygodnia === j.dzien) {
+					j.lekcje += l.TypZastepstwa === -1 ? `${l.Godzina}. ${l.Nazwa}<br />` : `<span style="text-decoration: line-through">${l.Godzina}. ${l.Nazwa}</span> <br />`
 				}
 			})
-			if(j.lekcje.arr.length !== 0){
-				j.lekcje.arr.push('')
-				document.querySelector('#jutro-plan').innerHTML = 'Lekcje: <br />' + j.lekcje.arr.join('<br />')
-			}
+			document.querySelector('#jutro-plan').innerHTML = j.lekcje.length === 14 ? 'Brak lekcji' : j.lekcje
 		}
-		return client.sprawdziany(new Date())
+		return client.sprawdziany(d.date)
 	}).then(sprawdziany => {
 		console.log('pulpit: sprawdziany', sprawdziany)
-		d.date = new Date()
-		d.date.setHours(d.date.getHours() - d.date.getTimezoneOffset() / 60)
-		j.date = new Date(new Date().getTime()+86400000)
-		j.date.setHours(j.date.getHours() - j.date.getTimezoneOffset() / 60)
-		sprawdziany.ListK.forEach(sprawdzian => {
-			if(sprawdzian.data === d.date.toJSON().split('T')[0]){
-				d.sprawdziany.arr.push(`${sprawdzian.rodzaj} - ${sprawdzian.rodzaj}: ${sprawdzian.zakres}`)
-			}
-			if(sprawdzian.data === j.date.toJSON().split('T')[0]){
-				j.sprawdziany.arr.push(`${sprawdzian.rodzaj} - ${sprawdzian.rodzaj}: ${sprawdzian.zakres}`)
-			}
+		sprawdziany.ListK.forEach(spr => {
+			d.sprawdziany += spr.data === d.jsondate ? `${spr.rodzaj} - ${spr.rodzaj}: ${spr.zakres} <br />` : ''
+			j.sprawdziany += spr.data === j.jsondate ? `${spr.rodzaj} - ${spr.rodzaj}: ${spr.zakres} <br />` : ''
 		})
-		if(d.sprawdziany.arr.length !== 0){
-			document.querySelector('#dzisiaj-sprawdziany').innerHTML = 'Sprawdziany: <br />' + d.sprawdziany.arr.join('<br />')
-		}
-		if(j.date.getDate() === 1){
-			return client.sprawdziany(j.date)
-		} else {
-			if(j.sprawdziany.arr.length !== 0){
-				document.querySelector('#jutro-sprawdziany').innerHTML = 'Sprawdziany: <br />' + j.sprawdziany.arr.join('<br />')
-			}
+
+		document.querySelector('#dzisiaj-sprawdziany').innerHTML = d.sprawdziany.length === 19 ? 'Brak sprawdzianów' : d.sprawdziany
+		
+		if (j.date.getDate() !== 1) {
+			document.querySelector('#jutro-sprawdziany').innerHTML = j.sprawdziany.length === 19 ? 'Brak sprawdzianów' : j.sprawdziany
 			return false
+		} else {
+			return client.sprawdziany(j.date)
 		}
 	}).then(sprawdziany => {
-		if(sprawdziany){
+		if (sprawdziany) {
 			console.log('pulpit: sprawdziany 2', sprawdziany)
-			sprawdziany.ListK.forEach(sprawdzian => {
-				if(sprawdzian.data === d.date.toJSON().split('T')[0]){
-					d.sprawdziany.arr.push(`${sprawdzian.rodzaj} - ${sprawdzian.rodzaj}: ${sprawdzian.zakres}`)
-				}
-				if(sprawdzian.data === j.date.toJSON().split('T')[0]){
-					j.sprawdziany.arr.push(`${sprawdzian.rodzaj} - ${sprawdzian.rodzaj}: ${sprawdzian.zakres}`)
-				}
+			sprawdziany.ListK.forEach(spr => {
+				j.sprawdziany += spr.data === j.jsondate.toJSON().split('T')[0] ? `${spr.rodzaj} - ${spr.rodzaj}: ${spr.zakres} <br />` : ''
 			})
-			if(j.sprawdziany.arr.length !== 0){
-				document.querySelector('#jutro-sprawdziany').innerHTML = 'Sprawdziany: <br />' + j.sprawdziany.arr.join('<br />')
-			}
+			document.querySelector('#jutro-sprawdziany').innerHTML = j.sprawdziany.length === 19 ? 'Brak sprawdzianów' : j.sprawdziany
 		}
 		return client.praceDomowe(new Date())
 	}).then(zadania => {
 		console.log('pulpit: zadania', zadania)
 		zadania.ListK.forEach(zadanie => {
-			if(zadanie.dataO === d.date.toJSON().split('T')[0]){
-				d.zadania.arr.push(`${zadanie.przed}: ${zadanie.tytul}`)
-			}
-			if(zadanie.dataO === j.date.toJSON().split('T')[0]){
-				j.zadania.arr.push(`${zadanie.przed}: ${zadanie.tytul}`)
-			}
+			d.zadania += zadanie.dataO === d.jsondate ? `${zadanie.przed}: ${zadanie.tytul} <br />` : ''
+			j.zadania += zadanie.dataO === j.jsondate ? `${zadanie.przed}: ${zadanie.tytul} <br />` : ''
 		})
-		if(d.zadania.arr.length !== 0){
-			document.querySelector('#dzisiaj-zadania').innerHTML = 'Zadania: <br />' + d.zadania.arr.join('<br />')
-		}
-		if(j.zadania.arr.length !== 0){
-			document.querySelector('#jutro-zadania').innerHTML = 'Zadania: <br />' + j.zadania.arr.join('<br />')
-		}
+
+		document.querySelector('#dzisiaj-zadania').innerHTML = d.zadania.length === 15 ? 'Brak zadań domowych' : d.zadania
+		document.querySelector('#jutro-zadania').innerHTML = j.zadania.length === 15 ? 'Brak zadań domowych' : j.zadania
 		return client.wydarzenia()
 	}).then(wydarzenia => {
 		console.log('pulpit: wydarzenia', wydarzenia)
 		wydarzenia.ListK.forEach(wydarzenie => {
-			if(wydarzenie.data === d.date.toJSON().split('T')[0]){
-				d.wydarzenia.arr.push(wydarzenie.info)
-			}
-			if(wydarzenie.data === j.date.toJSON().split('T')[0]){
-				j.wydarzenia.arr.push(wydarzenie.info)
-			}
+			d.wydarzenia += wydarzenie.data === d.jsondate ? wydarzenie.info : ''
+			j.wydarzenia += wydarzenie.data === j.jsondate ? wydarzenie.info : ''
 		})
-		if(d.wydarzenia.arr.length !== 0){
-			document.querySelector('#dzisiaj-wydarzenia').innerHTML = 'Wydarzenia: <br />' + d.wydarzenia.arr.join('<br />')
-		}
-		if(j.wydarzenia.arr.length !== 0){
-			document.querySelector('#jutro-wydarzenia').innerHTML = 'Wydarzenia: <br />' + j.wydarzenia.arr.join('<br />')
-		}
+		document.querySelector('#dzisiaj-wydarzenia').innerHTML = d.wydarzenia.length === 18 ? 'Brak wydarzeń' : d.wydarzenia
+		document.querySelector('#jutro-wydarzenia').innerHTML = j.wydarzenia.length === 18 ? 'Brak wydarzeń' : j.wydarzenia
 	}).catch(err => handleError(err, 'pulpit'))
 }
 
@@ -808,7 +768,8 @@ function handleError(err, page){
 		})
 		return
 	}
-	alert('Wystąpił błąd: ' + err)
+	alert('Wystąpił błąd: ' + err + '\nWięcej informacji w konsoli: naciśnij F12')
+	console.error(err)
 }
 
 function loadPage(page){
