@@ -1,0 +1,77 @@
+<style>
+	red { color: #f30 }
+	gray {	color: #aaa }
+	blue { color: #06f }
+	icon {
+		font-size: 16px;
+		font-family: 'Material Icons';
+		font-weight: normal;
+		font-style: normal;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		display: inline-block;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-smoothing: antialiased;
+	}
+	glyph {
+		font-size: 24px;
+		font-family: 'Material Icons';
+		font-weight: normal;
+		font-style: normal;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		display: inline-block;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-smoothing: antialiased;
+	}
+	.strike {
+		text-decoration: line-through;
+	}
+	right {
+		float: right;
+	}
+</style>
+<div class="container">
+	<div class="section">
+		<input id="date" type="date" class="datepicker" placeholder="Data">
+		<br />
+		<br />
+		<div class="row">
+			<div class="col s12">
+				<ul class="tabs z-depth-1">
+					<li class="tab col s3" style="width: 20%"><a href="#poniedzialek-tab">Poniedziałek</a></li>
+					<li class="tab col s3" style="width: 20%"><a href="#wtorek-tab">Wtorek</a></li>
+					<li class="tab col s3" style="width: 20%"><a href="#sroda-tab">Środa</a></li>
+					<li class="tab col s3" style="width: 20%"><a href="#czwartek-tab">Czwartek</a></li>
+					<li class="tab col s3" style="width: 20%"><a href="#piatek-tab">Piątek</a></li>
+				</ul>
+			</div>
+			<div id="poniedzialek-tab" class="col s12">
+				<h5 id="poniedzialek-data"></h5>
+				<ul id="poniedzialek" class="collapsible"></ul>
+			</div>
+			<div id="wtorek-tab" class="col s12">
+				<h5 id="wtorek-data"></h5>
+				<ul id="wtorek" class="collapsible"></ul>
+			</div>
+			<div id="sroda-tab" class="col s12">
+				<h5 id="sroda-data"></h5>
+				<ul id="sroda" class="collapsible"></ul>
+			</div>
+			<div id="czwartek-tab" class="col s12">
+				<h5 id="czwartek-data"></h5>
+				<ul id="czwartek" class="collapsible"></ul>
+			</div>
+			<div id="piatek-tab" class="col s12">
+				<h5 id="piatek-data"></h5>
+				<ul id="piatek" class="collapsible"></ul>
+			</div>
+		</div>
+	</div>
+</div>

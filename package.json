@@ -36,12 +36,17 @@
         "deb"
       ],
       "icon": "icons"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icons/icon.ico"
     }
   },
   "homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "idziennik": "^4.2.0",
     "jquery": "^3.2.1",
     "materialize-css": "^0.98.2"
   },
