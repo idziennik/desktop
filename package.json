@@ -47,12 +47,7 @@
   "homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "jquery": "^3.2.1",
     "idziennik": "^4.2.5",
-    "materialize-css": "^0.98.2"
-  },
-  "devDependencies": {
-    "electron": "^1.6.10",
-    "electron-builder": "^18.5.1"
+    "jquery": "^3.2.1"
   }
 }
