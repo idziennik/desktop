@@ -1,12 +1,12 @@
 {
-  "name": "idziennik-electron",
+  "name": "idziennik-desktop",
   "productName": "iDziennik",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bjornskjald/idziennik-electron.git"
+    "url": "git+https://github.com/Bjornskjald/idziennik-desktop.git"
   },
   "author": {
     "name": "Bjornskjald",
@@ -14,10 +14,10 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Bjornskjald/idziennik-electron/issues"
+    "url": "https://github.com/Bjornskjald/idziennik-desktop/issues"
   },
   "build": {
-    "appId": "ml.bjorn.idziennik.electron",
+    "appId": "ml.bjorn.idziennik.desktop",
     "files": [
       "css/",
       "js/",
@@ -44,15 +44,10 @@
       "icon": "icons/icon.ico"
     }
   },
-  "homepage": "https://github.com/Bjornskjald/idziennik-electron#readme",
+  "homepage": "https://github.com/Bjornskjald/idziennik-desktop#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "jquery": "^3.2.1",
     "idziennik": "^4.2.5",
-    "materialize-css": "^0.98.2"
-  },
-  "devDependencies": {
-    "electron": "^1.6.10",
-    "electron-builder": "^18.5.1"
+    "jquery": "^3.2.1"
   }
 }

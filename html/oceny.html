@@ -1,16 +1,17 @@
 <div class="container">
 	<div class="section">
-	<h5 id="srednia">Twoja średnia: </h5>
-	<a class="btn waves-effect waves-light" href="javascript:oceny_filter('ostatniMiesiac')">Ostatni miesiąc </a>
-	<a class="btn waves-effect waves-light" href="javascript:oceny_wszystkie()">Wszystkie</a>
+	<h5 id="srednia">Twoja średnia: {{ srednia }}</h5>
+	<a class="btn waves-effect waves-light" href="javascript:oceny('ostatniMiesiac')">Ostatni miesiąc </a>
+	<a class="btn waves-effect waves-light" href="javascript:oceny()">Wszystkie</a>
 	<div class="input-field inline">
 		<input id="szukaj">
 		<label for="szukaj">Szukaj</label>
 	</div>
-	<a class="btn waves-effect waves-light" href="javascript:oceny_filter('szukaj')">Szukaj</a>
+	<a class="btn waves-effect waves-light" href="javascript:oceny('szukaj', document.querySelector('#szukaj').value.toLowerCase())">Szukaj</a>
 	<br />
 	<br />
 	<table id="table" class="striped">
+		<tr is="przedmiot" v-for="przedmiot in przedmioty" :przedmiot="przedmiot"/>
 	</table>
 	</div>
 </div>

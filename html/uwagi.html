@@ -1,10 +1,10 @@
 <div class="container">
 	<div class="section">
-		<h5 id="punkty">Liczba punktów: </h5><br />
-		<a href="javascript:uwagi_wszystkie()" class="btn waves-effect waves-light">Wszystkie</a>
-		<a href="javascript:uwagi_filter('p')" class="btn waves-effect waves-light">Pochwały</a>
-		<a href="javascript:uwagi_filter('o')" class="btn waves-effect waves-light">Neutralne</a>
-		<a href="javascript:uwagi_filter('n')" class="btn waves-effect waves-light">Nagany</a>
+		<h5 id="punkty">Liczba punktów: {{ count }}</h5><br />
+		<a href="javascript:uwagi()" class="btn waves-effect waves-light">Wszystkie</a>
+		<a href="javascript:uwagi('p')" class="btn waves-effect waves-light">Pochwały</a>
+		<a href="javascript:uwagi('o')" class="btn waves-effect waves-light">Neutralne</a>
+		<a href="javascript:uwagi('n')" class="btn waves-effect waves-light">Nagany</a>
 		<br />
 		<br />
 		<table class="striped" id="uwagi">
@@ -17,6 +17,7 @@
 				</tr>
 			</thead>
 			<tbody id="table">
+				<tr is="uwaga" v-for="uwaga in lista" :uwaga="uwaga" />
 			</tbody>
 		</table>
 	</div>
