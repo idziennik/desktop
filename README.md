@@ -1,4 +1,4 @@
-# iDziennik-Electron
+# iDziennik-Desktop
 
 ### Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik
 
@@ -7,8 +7,8 @@
 Możesz zbudować aplikację ręcznie:
 ```
 sudo npm install -g electron-builder
-git clone https://github.com/Bjornskjald/idziennik-electron.git
-cd idziennik-electron
+git clone https://github.com/Bjornskjald/idziennik-desktop.git
+cd idziennik-desktop
 build
 ``` 
 Plik będzie znajdować się w katalogu dist/ gotowy do zainstalowania.
