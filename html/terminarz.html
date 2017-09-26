@@ -1,8 +1,5 @@
 <style>
-	red { color: #f30 }
-	gray {	color: #aaa }
-	blue { color: #06f }
-	icon {
+	.icon {
 		font-size: 16px;
 		font-family: 'Material Icons';
 		font-weight: normal;
@@ -16,7 +13,7 @@
 		direction: ltr;
 		-webkit-font-smoothing: antialiased;
 	}
-	glyph {
+	.glyph {
 		font-size: 24px;
 		font-family: 'Material Icons';
 		font-weight: normal;
@@ -33,8 +30,25 @@
 	.strike {
 		text-decoration: line-through;
 	}
-	right {
-		float: right;
+	
+	.collapsible-header {
+		display: block;
+		cursor: pointer;
+		min-height: 3rem;
+		line-height: 2rem;
+		padding: 0 1rem;
+		background-color: #fff;
+		border-bottom: 1px solid #ddd;
+	}
+	  
+	.collapsible-header i {
+		width: 2rem;
+		font-size: 1.6rem;
+		line-height: 2rem;
+		display: block;
+		float: left;
+		text-align: center;
+		margin-right: 1rem;
 	}
 </style>
 <div class="container">
@@ -42,7 +56,7 @@
 		<input id="date" type="date" class="datepicker" placeholder="Data">
 		<br />
 		<br />
-		<div class="row">
+		<div class="row" id="app">
 			<div class="col s12">
 				<ul class="tabs z-depth-1">
 					<li class="tab col s3" style="width: 20%"><a href="#poniedzialek-tab">Poniedziałek</a></li>
@@ -52,26 +66,7 @@
 					<li class="tab col s3" style="width: 20%"><a href="#piatek-tab">Piątek</a></li>
 				</ul>
 			</div>
-			<div id="poniedzialek-tab" class="col s12">
-				<h5 id="poniedzialek-data"></h5>
-				<ul id="poniedzialek" class="collapsible"></ul>
-			</div>
-			<div id="wtorek-tab" class="col s12">
-				<h5 id="wtorek-data"></h5>
-				<ul id="wtorek" class="collapsible"></ul>
-			</div>
-			<div id="sroda-tab" class="col s12">
-				<h5 id="sroda-data"></h5>
-				<ul id="sroda" class="collapsible"></ul>
-			</div>
-			<div id="czwartek-tab" class="col s12">
-				<h5 id="czwartek-data"></h5>
-				<ul id="czwartek" class="collapsible"></ul>
-			</div>
-			<div id="piatek-tab" class="col s12">
-				<h5 id="piatek-data"></h5>
-				<ul id="piatek" class="collapsible"></ul>
-			</div>
+			<dzien v-for="dzien in tydzien" :dzien="dzien"></dzien>
 		</div>
 	</div>
 </div>
