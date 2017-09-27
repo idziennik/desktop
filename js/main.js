@@ -86,7 +86,7 @@ function handleError (err, page) {
 		idziennik({username: data.username, hash: data.hash})
 		.then(cl => {
 			client = cl
-			require('./js/pages/'+data.defaultPage)[data.defaultPage]()
+			require('./js/pages/'+data.defaultPage)()
 		})
 		return
 	}
