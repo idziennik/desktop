@@ -65,7 +65,7 @@ module.exports = (date) => {
 		plan.Przedmioty.forEach(lekcja => {
 			lekcja.godziny = godziny(plan, lekcja)
 			lekcja.nazwa = lekcja.TypZastepstwa === -1 ? lekcja.Nazwa : '<span class="strike">' + lekcja.Nazwa + '</span>'
-			lekcja.zastepstwo = lekcja.TypZastepstwa !== -1 ? '(<span style="color: #f30; float: right">' + opisy(lekcja) + '</span>)' : ''
+			lekcja.zastepstwo = lekcja.TypZastepstwa !== -1 ? '<span style="color: #f30; float: right">' + opisy(lekcja) + '</span>' : ''
 			tydzien[lekcja.DzienTygodnia - 1].lekcje.push(lekcja)
 		})
 		Materialize.toast("Pobrano plan lekcji!", 1000)
@@ -140,7 +140,7 @@ Vue.component('lekcja', {
     template: `
 		<li>
 			<div class="collapsible-header" :data-godzina="lekcja.Godzina" :data-nazwa="lekcja.Nazwa">
-				{{ lekcja.Godzina }}. {{ lekcja.nazwa }} {{ lekcja.zastepstwo }}<br />
+				{{ lekcja.Godzina }}. <span v-html="lekcja.nazwa"></span> <span v-html="lekcja.zastepstwo"></span><br />
 				<i class="icon">person</i> <span style="color: #aaa">{{ lekcja.Nauczyciel }}</span><br />
 				<i class="icon">access_time</i> <span style="color: #06f">{{ lekcja.godziny }}</span>
 				<div v-if="lekcja.obecnosc">
