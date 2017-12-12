@@ -47,7 +47,7 @@
   "homepage": "https://github.com/Bjornskjald/idziennik-desktop#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "idziennik": "^4.2.5",
+    "idziennik": "github:bjornskjald/idziennik#browser",
     "jquery": "^3.2.1"
   }
 }
