@@ -60,7 +60,7 @@ module.exports = (date) => {
 	var tydzien = dni.map(d => {
 		return {nazwa: d, lekcje: []}
 	})
-	client.plan(date).then(plan => {
+	client.plan(date, true).then(plan => {
 		console.log('terminarz: plan', plan)
 		plan.Przedmioty.forEach(lekcja => {
 			lekcja.godziny = godziny(plan, lekcja)
