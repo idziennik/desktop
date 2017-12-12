@@ -60,7 +60,7 @@ module.exports = (date) => {
 	var tydzien = dni.map(d => {
 		return {nazwa: d, lekcje: []}
 	})
-	client.plan(date, true).then(plan => {
+	client.plan(date).then(plan => {
 		console.log('terminarz: plan', plan)
 		plan.Przedmioty.forEach(lekcja => {
 			lekcja.godziny = godziny(plan, lekcja)
@@ -69,7 +69,7 @@ module.exports = (date) => {
 			tydzien[lekcja.DzienTygodnia - 1].lekcje.push(lekcja)
 		})
 		Materialize.toast("Pobrano plan lekcji!", 1000)
-		return client.obecnosci(date)
+		return client.obecnosci(date, true)
 	}).then(obecnosci => {
 		console.log('terminarz: obecnosci', obecnosci)
 		obecnosci.Obecnosci.forEach(obecnosc => {
