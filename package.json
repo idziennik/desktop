@@ -56,10 +56,13 @@
     "vue": "^2.5.10"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-vueify": "github:bjornskjald/gulp-vueify"
+    "electron": "^1.7.9"
   },
   "scripts": {
-    "dev": "gulp && electron ."
+    "dev": "electron .",
+    "build:win": "node_modules/.bin/electron-builder build -w",
+    "build:mac": "node_modules/.bin/electron-builder build -m",
+    "build:linux": "node_modules/.bin/electron-builder build -l",
+    "build": "node_modules/.bin/electron-builder build -wml"
   }
 }
