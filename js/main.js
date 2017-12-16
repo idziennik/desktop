@@ -1,5 +1,4 @@
 var client, data
-var sidenav = {close: () => {}}
 const idziennik = require('idziennik')
 const fs = require('fs')
 const cryptojs = require('crypto-js')
