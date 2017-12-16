@@ -1,7 +1,7 @@
 {
   "name": "idziennik-desktop",
   "productName": "iDziennik",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
   "main": "index.js",
   "repository": {
@@ -56,7 +56,8 @@
     "vue": "^2.5.10"
   },
   "devDependencies": {
-    "electron": "^1.7.9"
+    "electron": "^1.7.9",
+    "electron-builder": "^19.49.0"
   },
   "scripts": {
     "dev": "electron .",
