@@ -1,11 +1,4 @@
-const dni = [
-	'poniedzialek',
-	'wtorek',
-	'sroda',
-	'czwartek',
-	'piatek'
-]
-const obecnosci = [
+const opisyObecnosci = obecnosc => '<span style="color: #f30">' + [
     'obecny',
     'nieobecność usprawiedliwiona',
     'spóźnienie',
@@ -16,24 +9,26 @@ const obecnosci = [
     'ferie',
     'wycieczka',
     'zwolniony / obecny'
-]
-const opisy = lekcja => {
-		return [
-			'Odwołane',
-			`Zastępstwo (${lekcja.NauZastepujacy})`,
-			`Zastępstwo (${lekcja.NauZastepujacy} - ${lekcja.PrzedmiotZastepujacy})`,
-			`Zastępstwo - inne (${lekcja.NauZastepujacy})`,
-			`Łączona (${lekcja.NauZastepujacy})`,
-			`Łączona - inna (${lekcja.NauZastepujacy} - ${lekcja.PrzedmiotZastepujacy})`
-		][lekcja.TypZastepstwa]
-    }
+][obecnosc.TypObecnosci] + '</span>'
+
+const opisyZastepstw = lekcja => '<span style="color: #f30; float: right">' + [
+	'Odwołane',
+	`Zastępstwo (${lekcja.NauZastepujacy})`,
+	`Zastępstwo (${lekcja.NauZastepujacy} - ${lekcja.PrzedmiotZastepujacy})`,
+	`Zastępstwo - inne (${lekcja.NauZastepujacy})`,
+	`Łączona (${lekcja.NauZastepujacy})`,
+	`Łączona - inna (${lekcja.NauZastepujacy} - ${lekcja.PrzedmiotZastepujacy})`
+][lekcja.TypZastepstwa] + '</span>'
+
 const godziny = (plan, lekcja) => {
 	return plan.GodzinyLekcyjne[lekcja.Godzina].Poczatek + ' - ' + plan.GodzinyLekcyjne[lekcja.Godzina].Koniec
 }
 
+const ne = s => s ? s : ''
+
 module.exports = (date) => {
 	loadPage('terminarz')
-	var $input = $('#date').pickadate({
+	var picker = new M.Datepicker(document.querySelector('#date'), {
 		selectMonths: true,
 		selectYears: 15,
 		today: 'Dzisiaj',
@@ -45,40 +40,35 @@ module.exports = (date) => {
 		weekdaysShort: [ 'niedz.', 'pn.', 'wt.', 'śr.', 'cz.', 'pt.', 'sob.' ],
 		firstDay: 1,
 		format: 'd mmmm yyyy',
-		formatSubmit: 'yyyy/mm/dd',
-		onSet: event => {
-			if (event.select) {
-				module.exports(new Date(picker.get('select', 'yyyy/mm/dd')))
-			}
+		onSelect: date => {
+			module.exports(date)
 		}
 	})
-	var picker = $input.pickadate('picker')
 	var date = typeof date === 'object' ? date : new Date()
 	var jsondate = date
 	jsondate.setHours(jsondate.getHours() + jsondate.getTimezoneOffset() / 60)
 	jsondate = jsondate.toJSON().split('T')[0]
-	var tydzien = dni.map(d => {
-		return {nazwa: d, lekcje: []}
+	var tydzien = ['poniedzialek', 'wtorek', 'sroda', 'czwartek', 'piatek'].map(d => {
+		return {nazwa: d, lekcje: [], html: ''}
 	})
 	client.plan(date).then(plan => {
 		console.log('terminarz: plan', plan)
 		plan.Przedmioty.forEach(lekcja => {
 			lekcja.godziny = godziny(plan, lekcja)
-			lekcja.nazwa = lekcja.TypZastepstwa === -1 ? lekcja.Nazwa : '<span class="strike">' + lekcja.Nazwa + '</span>'
-			lekcja.zastepstwo = lekcja.TypZastepstwa !== -1 ? '<span style="color: #f30; float: right">' + opisy(lekcja) + '</span>' : ''
+			lekcja.nazwa = lekcja.TypZastepstwa !== -1 ? '<span class="strike">' + lekcja.Nazwa + '</span>' : lekcja.Nazwa
+			lekcja.zastepstwo = lekcja.TypZastepstwa !== -1 ? opisyZastepstw(lekcja) : ''
 			tydzien[lekcja.DzienTygodnia - 1].lekcje.push(lekcja)
 		})
-		Materialize.toast("Pobrano plan lekcji!", 1000)
+		M.toast({html: "Pobrano plan lekcji!", displayLength: 1000})
 		return client.obecnosci(date, true)
 	}).then(obecnosci => {
 		console.log('terminarz: obecnosci', obecnosci)
 		obecnosci.Obecnosci.forEach(obecnosc => {
-			tydzien[obecnosc.DzienTygodnia - 1].data = obecnosc.Data.split(' ')[0]
-			tydzien[obecnosc.DzienTygodnia - 1].lekcje.find(el => {
-				return el.Godzina == obecnosc.Godzina
-			}).obecnosc = obecnosc.TypObecnosci !== 0 ? obecnosci[obecnosc.TypObecnosci] : ''
+			var dzien = tydzien[obecnosc.DzienTygodnia - 1]
+			dzien.data = obecnosc.Data.split(' ')[0]
+			dzien.lekcje.find(el => el.Godzina == obecnosc.Godzina).obecnosc = obecnosc.TypObecnosci !== 0 ? opisyObecnosci(obecnosc) : ''
 		})
-		Materialize.toast("Pobrano obecności!", 1000)
+		M.toast({html: "Pobrano obecności!", displayLength: 1000})
 		return client.praceDomowe(date)
 	}).then(zadania => {
 		console.log('terminarz: zadania', zadania)
@@ -86,83 +76,62 @@ module.exports = (date) => {
 			tydzien.forEach(dzien => {
 				if (dzien.data === zadanie.dataO) {
 					client.pracaDomowa(zadanie._recordId).then(zadanie_full => {
-						var {tytul, tresc} = zadanie_full.praca
-						var lekcja = dzien.lekcje.find(element => {
-							return element.Nazwa == zadanie.przed
-						})
-						lekcja.zadanie = {tytul: tytul, tresc: tresc}
+						var lekcja = dzien.lekcje.find(el => el.Nazwa == zadanie.przed)
+						lekcja.zadanie = zadanie_full.praca
 						lekcja.collapsible = true
 					})
 				}
 			})
 		})
-		Materialize.toast("Pobrano zadania domowe!", 1000)
+		M.toast({html: "Pobrano zadania domowe!", displayLength: 1000})
 		return client.sprawdziany(date)
 	}).then(sprawdziany => {
 		console.log('terminarz: sprawdziany', sprawdziany)
 		sprawdziany.ListK.forEach(sprawdzian => {
 			tydzien.forEach(dzien => {
 				if (dzien.data === sprawdzian.data) {
-					var {rodzaj, zakres} = sprawdzian
-					var lekcja = dzien.lekcje.find(element => {
-						return element.Nazwa == sprawdzian.przedmiot
-					})
-					lekcja.sprawdzian = {rodzaj: rodzaj, zakres: zakres}
+					var lekcja = dzien.lekcje.find(el => el.Nazwa == sprawdzian.przedmiot)
+					lekcja.sprawdzian = sprawdzian
 					lekcja.collapsible = true
 				}
 			})
 		})
-		var app = new Vue({
-			el: '#app',
-			data: () => { return {
-				tydzien: tydzien
-			}}
-		})
-		$('ul.tabs').tabs()
-		$('.collapsible').collapsible()
+
+		document.querySelector('#app').innerHTML += tydzien.map(Dzien).join('')
+		new M.Tabs(document.querySelector('ul.tabs'))
+		document.querySelectorAll('.collapsible').forEach(el => new M.Collapsible(el))
 	}).catch(err => { handleError(err, 'terminarz') })
 }
 
-Vue.component('dzien', {
-	props: ['dzien'],
-	template: `
-		<div :id="dzien.nazwa + '-tab'" class="col s12">
-			<h5 :id="dzien.nazwa + '-data'">{{ dzien.data }}</h5>
-			<ul :id="dzien.nazwa" class="collapsible">
-				<lekcja v-for="lekcja in dzien.lekcje" :lekcja="lekcja" :key="lekcja.Godzina" />
-			</ul>
+const Dzien = dzien => `
+	<div id="${dzien.nazwa}-tab" class="col s12">
+		<h5 id="${dzien.nazwa}-data">${dzien.data}</h5>
+		<ul id="${dzien.nazwa}" class="collapsible">
+			${dzien.lekcje.map(Lekcja).join('')}
+		</ul>
+	</div>
+`
+
+const Lekcja = lekcja => `
+	<li>
+		<div class="collapsible-header" data-godzina="${lekcja.Godzina}" data-nazwa="${lekcja.Nazwa}">
+			${lekcja.Godzina}. ${lekcja.nazwa} ${lekcja.zastepstwo}<br />
+			<i class="icon">person</i> <span style="color: #aaa">${lekcja.Nauczyciel}</span><br />
+			<i class="icon">access_time</i> <span style="color: #06f">${lekcja.godziny}</span>
+			${lekcja.obecnosc ? lekcja.obecnosc : ''}
+			${lekcja.zadanie ? 
+				`<br /><i class="icon">home</i> <span style="color: #f30">${lekcja.zadanie.tytul}</span>` : ''
+			}
+			${lekcja.sprawdzian ? 
+				`<br /><i class="icon">assignment</i> <span style="color: #f30">${lekcja.sprawdzian.rodzaj}</span>` : ''
+			}
 		</div>
-	`
-})
+		${lekcja.collapsible ? 
+			`<div class="collapsible-body">${lekcja.zadanie ? Zadanie(lekcja.zadanie) : ''}${lekcja.sprawdzian ? Sprawdzian(lekcja.sprawdzian) : ''}</div>` : ''
+		}
+	</li>
+`
 
-Vue.component('lekcja', {
-    props: ['lekcja'],
-    template: `
-		<li>
-			<div class="collapsible-header" :data-godzina="lekcja.Godzina" :data-nazwa="lekcja.Nazwa">
-				{{ lekcja.Godzina }}. <span v-html="lekcja.nazwa"></span> <span v-html="lekcja.zastepstwo"></span><br />
-				<i class="icon">person</i> <span style="color: #aaa">{{ lekcja.Nauczyciel }}</span><br />
-				<i class="icon">access_time</i> <span style="color: #06f">{{ lekcja.godziny }}</span>
-				<div v-if="lekcja.obecnosc">
-					<br /><span style="color: #f30">{{ lekcja.obecnosc }}</span>
-				</div>
-				<div v-if="lekcja.zadanie">
-					<br /><i class="icon">home</i> <span style="color: #f30">{{ lekcja.zadanie.tytul }}</span>
-				</div>
-				<div v-if="lekcja.sprawdzian">
-					<br /><i class="icon">assignment</i> <span style="color: #f30">{{ lekcja.sprawdzian.rodzaj }}</span>
-				</div>
-			</div>
-			<div v-if="lekcja.collapsible" class="collapsible-body">
-				<zadanie v-if="lekcja.zadanie" :zadanie="lekcja.zadanie" />
-				<sprawdzian v-if="lekcja.sprawdzian" :sprawdzian="lekcja.sprawdzian" />
-			</div>
-		</li>
-    `
-})
-
-Vue.component('zadanie', { props: ['zadanie'], template: `<collapsible-tresc icon="home" :title="zadanie.tytul" :content="zadanie.tresc" />`})
-
-Vue.component('sprawdzian', { props: ['sprawdzian'], template: `<collapsible-tresc icon="assignment" :title="sprawdzian.rodzaj" :content="sprawdzian.zakres" />`})
-
-Vue.component('collapsible-tresc', { props: ['icon', 'title', 'content'], template: `<div><i class="glyph">{{ icon }}</i> <span style="font-size: 150%">{{ title }}</span><br />{{ content }}<br /></div>`})
+const Zadanie = zadanie => Tresc({icon: 'home', title: zadanie.tytul, content: zadanie.tresc})
+const Sprawdzian = sprawdzian => Tresc({icon: 'assignment', title: sprawdzian.rodzaj, content: sprawdzian.zakres})
+const Tresc = options => `<div><i class="glyph">${options.icon}</i> <span style="font-size: 150%">${options.title}</span><br />${options.content}<br /></div>`

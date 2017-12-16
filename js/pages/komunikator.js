@@ -1,49 +1,37 @@
-module.exports = (tryb) => {
-	loadPage('komunikator')
-    if(!tryb) var tryb = 'odebrane'
-    var app = new Vue({
-        el: '#table',
-        data: () => {
-            return {
-                wiadomosci: [],
-                tryb: tryb
-            }
-        }
-    })
-	client[tryb]().then(wiadomosci => {
-		console.log('wiadomosci', wiadomosci)
-        app.wiadomosci = wiadomosci.ListK
-    }).catch(err => handleError(err, 'komunikator'))
-    window.modal = new Vue({
-        el: '#modal',
-        data: () => {
-            return { 
-                wiadomosc: {}
-            }
-        }
-    })
+module.exports = tryb => {
+  loadPage('preloader')
+  if(!tryb) var tryb = 'odebrane'
+  client[tryb]().then(wiadomosci => {
+    console.log('wiadomosci', wiadomosci)
+    loadPage('komunikator')
+    document.querySelector('#tryb').innerHTML = tryb === 'odebrane' ? 'Nadawca' : 'Odbiorca'
+    document.querySelector('tbody').innerHTML = wiadomosci.ListK.map(Wiadomosc).join('')
+    
+  }).catch(err => handleError(err, 'komunikator'))
 }
 
-Vue.component('wiadomosc', {
-    props: ['wiadomosc'],
-    template: `
-        <tr>
-            <td style="white-space: nowrap;">{{ wiadomosc.DataNadania }}</td>
-            <td style="white-space: nowrap;">{{ wiadomosc.Nadawca }}</td>
-            <td>
-                <a href="#!" @click="click" :data-id="wiadomosc._recordId">{{ wiadomosc.Tytul }}</a>
-            </td>
-        </tr>
-    `,
-    methods: {
-        click: (e) => {
-            client.wiadomosc(e.target.dataset.id).then(wiadomosc => {
-                console.log('wiadomosc', wiadomosc)
-                wiadomosc.Wiadomosc.tresc = typeof wiadomosc.Wiadomosc.Text === 'string' ? wiadomosc.Wiadomosc.Text.replace('\n', '<br />') : ''
-                modal.wiadomosc = wiadomosc.Wiadomosc
-                $('#modal').modal()
-                $('#modal').modal('open')
-            }).catch(err => handleError(err, 'komunikator'))
-        }
-    }
-})
+const Wiadomosc = wiadomosc => `
+  <tr>
+    <td style="white-space: nowrap;">${wiadomosc.DataNadania}</td>
+    <td style="white-space: nowrap;">${wiadomosc.Nadawca}</td>
+    <td>
+      <a href="#!" class="msg" onclick="document.loadMessage('${wiadomosc._recordId}')">${wiadomosc.Tytul}</a>
+    </td>
+  </tr>
+`
+
+const Modal = wiadomosc => `
+		<h4>${wiadomosc.Tytul}</h4>
+		Nadawca: ${wiadomosc.Nadawca}<br />
+		Data nadania: ${wiadomosc.DataNadania}<br />
+    Data odczytania: ${wiadomosc.DataOdczytania}<br /><br />
+    ${typeof wiadomosc.Text === 'string' ? wiadomosc.Text.replace('\n', '<br />') : ''}
+`
+
+document.loadMessage = id => {
+  client.wiadomosc(id).then(wiadomosc => {
+    console.log('wiadomosc', wiadomosc)
+    document.querySelector('#modal-content').innerHTML = Modal(wiadomosc.Wiadomosc)
+    new M.Modal(document.querySelector('.modal')).open()
+  }).catch(err => handleError(err, 'komunikator'))
+}
