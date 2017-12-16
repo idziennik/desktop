@@ -1,7 +1,7 @@
 {
   "name": "idziennik-desktop",
   "productName": "iDziennik",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "description": "Wieloplatformowa aplikacja desktopowa dla modułu Node.js iDziennik",
   "main": "index.js",
   "repository": {
@@ -42,12 +42,28 @@
         "nsis"
       ],
       "icon": "icons/icon.ico"
+    },
+    "directories": {
+      "output": "build"
     }
   },
   "homepage": "https://github.com/Bjornskjald/idziennik-desktop#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
     "idziennik": "github:bjornskjald/idziennik#browser",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "materialize-css": "^1.0.0-alpha.1",
+    "vue": "^2.5.10"
+  },
+  "devDependencies": {
+    "electron": "^1.7.9",
+    "electron-builder": "^19.49.0"
+  },
+  "scripts": {
+    "dev": "electron .",
+    "build:win": "node_modules/.bin/electron-builder build -w",
+    "build:mac": "node_modules/.bin/electron-builder build -m",
+    "build:linux": "node_modules/.bin/electron-builder build -l",
+    "build": "node_modules/.bin/electron-builder build -wml"
   }
 }

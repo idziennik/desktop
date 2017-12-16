@@ -2,28 +2,27 @@
 	td {
 		padding: 5px 5px;
 	}
+	a.msg {
+		cursor: pointer !important;
+	}
 </style>
 
 <div class="container">
 	<div class="section">
-		<table class="striped" id="table">
-			<tr>
-				<th>Data</th>
-				<th>{{ tryb === 'odebrane' ? "Nadawca" : "Odbiorca" }}</th>
-				<th>Temat</th>
-			</tr>
-			<tr is="wiadomosc" v-for="wiadomosc in wiadomosci" :wiadomosc="wiadomosc"/>
+		<table class="striped">
+			<thead>
+				<tr>
+					<th>Data</th>
+					<th id="tryb"></th>
+					<th>Temat</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
 		</table>
 	</div>
 </div>
 <div id="modal" class="modal">
 	<div class="modal-content" id="modal-content">
-		<h4>{{ wiadomosc.Tytul }}</h4>
-		Nadawca: {{ wiadomosc.Nadawca }}<br />
-		Data nadania: {{ wiadomosc.DataNadania }}<br />
-		Data odczytania: {{ wiadomosc.DataOdczytania }}<br /><br />
-		<div v-html="wiadomosc.tresc">
-		</div>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Zamknij</a>

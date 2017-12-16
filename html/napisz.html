@@ -5,19 +5,28 @@
 				<div class="collapsible-header">
 					Nauczyciele
 				</div>
-				<lista :osoby="nauczyciele" />
+				<div class="collapsible-body">
+					<div class="collection" id="nauczyciele">
+					</div>
+				</div>
 			</li>
 			<li>
 				<div class="collapsible-header">
 					Uczniowie
 				</div>
-				<lista :osoby="uczniowie" />
+				<div class="collapsible-body">
+					<div class="collection" id="uczniowie">
+					</div>
+				</div>
 			</li>
 			<li>
 				<div class="collapsible-header">
 					Rodzice
 				</div>
-				<lista :osoby="rodzice" />
+				<div class="collapsible-body">
+					<div class="collection" id="rodzice">
+					</div>
+				</div>
 			</li>
 		</ul>
 	</div>
@@ -28,8 +37,10 @@
 		<input disabled id="napisz-odbiorca-id" />
 		<input type="text" id="napisz-temat" placeholder="Temat" />
 		<textarea id="napisz-tresc" class="materialize-textarea" placeholder="Treść"></textarea>
-		<input type="checkbox" class="filled-in" id="napisz-potwierdzenie" />
-		<label for="napisz-potwierdzenie">Wymagaj potwierdzenia</label>
+		<label>
+			<input type="checkbox" class="filled-in" id="napisz-potwierdzenie" />
+			<span>Wymagaj potwierdzenia</span>
+		</label>
 
 	</div>
 	<div class="modal-footer">

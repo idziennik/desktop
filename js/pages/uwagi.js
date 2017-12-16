@@ -4,9 +4,9 @@ const kolory = {
 	p: 'rgb(214, 255, 214)'
 }
 
-module.exports = (filter) => {
+module.exports = filter => {
 	loadPage('uwagi')
-	if (typeof data.uwagi !== 'undefined') {
+	if (typeof data.uwagi !== 'undefined' && filter) {
 		handler(data.uwagi, filter)
 		return
 	}
@@ -14,37 +14,28 @@ module.exports = (filter) => {
 }
 
 function handler (uwagi, filter) {
-	var counter = new Vue({
-		el: '#punkty',
-		data: () => { return { count: uwagi.Poczatkowa } }
-	})
-	var app = new Vue({
-		el: '#uwagi', 
-		data: () => { return { lista: [] } }
-	})
 	console.log('uwagi', uwagi)
 	data.uwagi = uwagi
+	var lista = []
+	var counter = uwagi.Poczatkowa
 	uwagi.SUwaga.forEach(uwaga => {
-		counter.count += parseInt(uwaga.Punkty, 10)
+		counter += parseInt(uwaga.Punkty, 10)
 		uwaga.style = 'background-color: ' + kolory[uwaga.Typ]
 		if (filter) {
-			if (uwaga.Typ === filter) {
-				app.lista.push(uwaga)
-			}
-		} else {
-			app.lista.push(uwaga)
-		}
+			if (uwaga.Typ === filter)
+				lista.push(uwaga)
+		} else
+			lista.push(uwaga)
 	})
+	document.querySelector('#punkty').innerHTML += counter
+	document.querySelector('tbody').innerHTML = lista.map(Uwaga).join('')
 }
 
-Vue.component('uwaga', {
-	props: ['uwaga'],
-	template: `
-		<tr :style="uwaga.style">
-			<td style="white-space: nowrap;">{{ uwaga.Data }}</td>
-			<td style="white-space: nowrap;">{{ uwaga.Nauczyciel }}</td>
-			<td>{{ uwaga.Tresc }}</td>
-			<td>{{ uwaga.Punkty }}</td>
-		</tr>
-	`
-})
+const Uwaga = uwaga => `
+	<tr style="${uwaga.style}">
+		<td style="white-space: nowrap;">${uwaga.Data}</td>
+		<td style="white-space: nowrap;">${uwaga.Nauczyciel}</td>
+		<td>${uwaga.Tresc}</td>
+		<td>${uwaga.Punkty}</td>
+	</tr>
+`
