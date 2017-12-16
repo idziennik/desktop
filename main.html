@@ -4,7 +4,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width" initial-scale="1" maximum-scale="1.0" user-scalable="no">
-	<link rel="stylesheet" href="css/materialize.min.css">
+	<link rel="stylesheet" href="node_modules/materialize-css/dist/css/materialize.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<title>Zaloguj się</title>
@@ -17,6 +17,10 @@
 			font-family: 'Roboto', 'Calibri', sans-serif;
 		}
 		
+		html * {
+			cursor: default !important;
+		}
+
 		main {
 			flex: 1 0 auto;
 			overflow-y: auto;
@@ -28,6 +32,29 @@
 				width: 85%;
 			}
 		}
+
+		header, main, footer {
+      padding-left: 300px;
+    }
+
+    @media only screen and (max-width : 992px) {
+      header, main, footer {
+        padding-left: 0;
+      }
+    }
+
+		#nav-logo {
+			margin-top: 10px
+		}
+
+		@media only screen and (min-width: 993px) {
+			nav {
+				display: inline /* todo: fix this */
+			}
+			main {
+				max-height: calc(100vh - 70px);
+			}
+		}
 	</style>
 </head>
 
@@ -35,43 +62,67 @@
 	<header>
 		<nav class="teal" role="navigation">
 			<div class="nav-wrapper container" id="navbar">
-				<a id="logo-container" href="#" style="font-size: 200%">iDziennik</a>
+				<a id="logo-container" class="hide-on-large-only" href="javascript:require('electron').shell.openExternal('https://github.com/idziennik/desktop')" style="font-size: 200%">iDziennik</a>
+				<ul class="dropdown-content" id="komunikator">
+					<li id="nav-odebrane">
+						<a class="sidenav-close" href="javascript:pages.komunikator('odebrane')">Odebrane</a>
+					</li>
+					<li id="nav-wyslane">
+						<a class="sidenav-close" href="javascript:pages.komunikator('wyslane')">Wysłane</a>
+					</li>
+					<li id="nav-napisz">
+						<a class="sidenav-close" href="javascript:pages.napisz()">Napisz</a>
+					</li>
+				</ul>
+				
+				<ul class="sidenav sidenav-fixed" id="sidenav">
+					<li id="nav-logo" class="show-on-large">
+							<a id="logo-container" href="javascript:require('electron').shell.openExternal('https://github.com/idziennik/desktop')" style="font-size: 200%">iDziennik</a>
+					</li>
+					<li id="nav-terminarz">
+						<a class="sidenav-close" href="javascript:pages.terminarz()">Terminarz</a>
+					</li>
+				
+					<li id="nav-oceny">
+						<a class="sidenav-close" href="javascript:pages.oceny()">Oceny</a>
+					</li>
+				
+					<li id="nav-uwagi">
+						<a class="sidenav-close" href="javascript:pages.uwagi()">Uwagi</a>
+					</li>
+					
+					<li id="nav-komunikator">
+						<a class="dropdown-button" href="#!" data-target="komunikator">Komunikator</a>
+					</li>
+						
+					<li id="nav-ustawienia">
+						<a class="sidenav-close" href="javascript:pages.ustawienia()">Ustawienia</a>
+					</li>
+				
+					<li id="nav-wyloguj">
+						<a class="sidenav-close" href="javascript:wyloguj()" id="logout">Wyloguj </a>
+					</li>
+				</ul>
+				<a href="#sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 			</div>
 		</nav>
 	</header>
 	<main>
-		<div class="container">
-			<div class="section">
-				<div class="row">
-				</div>
-			</div>
-		</div>
+		<div id="app"></div>
 	</main>
 	<footer class="page-footer teal">
-		<!--
-		<div class="container">
-			<div class="row">
-				<div class="col l3 s12">
-					<a class="white-text" href="https://github.com/Bjornskjald/idziennik-cross/">idziennik-cross na GitHubie</a>
-				</div>
-			</div>
-		</div>
-		-->
 		<div class="footer-copyright">
 			<div class="container">Made by Bjornskjald</div>
 		</div>
 	</footer>
 	<script>
-		document.addEventListener("keydown", function (e) {
+		document.addEventListener("keydown", e => {
 			if (e.which === 123) {
 				require('electron').remote.getCurrentWindow().toggleDevTools();
 			}
-		});
+		})
 	</script>
-	<script src="js/jquery-3.2.1.min.js"></script>
-	<script src="js/hammer.min.js"></script>
-	<script src="js/materialize.min.js"></script>
-	<script src="js/vue.js"></script>
+	<script src="node_modules/materialize-css/dist/js/materialize.js"></script>
 	<script src="js/main.js"></script>
 </body>
 
