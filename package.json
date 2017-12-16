@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bjornskjald/idziennik-desktop.git"
+    "url": "git+https://github.com/idziennik/desktop.git"
   },
   "author": {
     "name": "Bjornskjald",
@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Bjornskjald/idziennik-desktop/issues"
+    "url": "https://github.com/idziennik/desktop/issues"
   },
   "build": {
     "appId": "ml.bjorn.idziennik.desktop",
@@ -42,15 +42,12 @@
         "nsis"
       ],
       "icon": "icons/icon.ico"
-    },
-    "directories": {
-      "output": "build"
     }
   },
-  "homepage": "https://github.com/Bjornskjald/idziennik-desktop#readme",
+  "homepage": "https://github.com/idziennik/desktop#readme",
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "idziennik": "github:bjornskjald/idziennik#browser",
+    "idziennik": "github:idziennik/idziennik#browser",
     "jquery": "^3.2.1",
     "materialize-css": "^1.0.0-alpha.1",
     "vue": "^2.5.10"
